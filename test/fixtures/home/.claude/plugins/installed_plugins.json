@@ -2,10 +2,32 @@
   "version": 2,
   "plugins": {
     "demo@fixture-market": [
-      { "scope": "user", "installPath": "__HOME__/.claude/plugins/cache/fixture-market/demo/1.0.0", "version": "1.0.0", "installedAt": "2026-01-01T00:00:00.000Z", "lastUpdated": "2026-01-01T00:00:00.000Z" }
+      {
+        "scope": "user",
+        "installPath": "__HOME__/.claude/plugins/cache/fixture-market/demo/1.0.0",
+        "version": "1.0.0",
+        "installedAt": "2026-01-01T00:00:00.000Z",
+        "lastUpdated": "2026-01-01T00:00:00.000Z"
+      }
     ],
     "other@fixture-market": [
-      { "scope": "user", "installPath": "__HOME__/.claude/plugins/cache/fixture-market/other/2.0.0", "version": "2.0.0", "installedAt": "2026-01-01T00:00:00.000Z", "lastUpdated": "2026-01-01T00:00:00.000Z" }
+      {
+        "scope": "user",
+        "installPath": "__HOME__/.claude/plugins/cache/fixture-market/other/2.0.0",
+        "version": "2.0.0",
+        "installedAt": "2026-01-01T00:00:00.000Z",
+        "lastUpdated": "2026-01-01T00:00:00.000Z"
+      }
+    ],
+    "rooted@fixture-market": [
+      {
+        "scope": "user",
+        "installPath": "__HOME__/.claude/plugins/cache/fixture-market/rooted/abc123",
+        "version": "abc123",
+        "installedAt": "2026-01-01T00:00:00.000Z",
+        "lastUpdated": "2026-01-01T00:00:00.000Z",
+        "gitCommitSha": "abc123"
+      }
     ]
   }
 }

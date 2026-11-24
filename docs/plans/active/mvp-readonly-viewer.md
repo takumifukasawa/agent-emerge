@@ -21,7 +21,7 @@ The acceptance criteria in `docs/spec/mvp-readonly-viewer.md` are all met and `h
 | 2 | Structural tests for architecture invariants (fsread/gitread only, no write IPC, no network) | 完了 | turn 「未強制」 rows into 強制済 |
 | 3 | Fixtures: fictional home with 2 accounts, a source repo, a harness project, cases for every warning | 完了 | paths under /fixture-root or ~ |
 | 4 | `fsread` + `gitread` + account discovery (`~/.claude`, `~/.claude-*`, manual add, display names) + prefs persistence | 完了 | prefs.json per decisions/0002 |
-| 5 | claude-code adapter: skills (user / plugin / harness project), provenance, plugins enabled state | 未着手 | |
+| 5 | claude-code adapter: skills (user / plugin / harness project), provenance, plugins enabled state | 完了 | `src/main/adapters/claude-code`; not yet exposed over IPC (comes with task 6) |
 | 5.5 | UI design mock (HTML) reviewed by the user before building screens | 未着手 | show the agreed layout (roots sidebar / feature tabs / detail pane) next to the article-style layout (features in sidebar); user picks |
 | 6 | Skill × account matrix: hashing, identical/differs, per-file diff | 未着手 | main screen |
 | 7 | Warnings: broken link, frontmatter, missing skill dependency, name collision, long description | 未着手 | |
@@ -47,6 +47,7 @@ The acceptance criteria in `docs/spec/mvp-readonly-viewer.md` are all met and `h
 - 2026-11-24: Task 4 mostly done: `fsread` (read-only), `gitread` (allowlist + forbidden args, unit-tested), `discoverAccounts` (auto / CLAUDE_CONFIG_DIR / manual, dedupe by real path), `accounts:list` IPC, e2e shows fixture accounts. Leak-check repair text pointed at `/fixture/home`, which the check itself rejects; changed the text to `/fixture-root` (detection unchanged).
 - 2026-11-24: User approved decisions/0002 (prefs.json write exception) and 0003 (catalogs + roadmap). Prefs store + `prefs:*` IPC done; structural tests updated and mutation-checked; e2e verifies a rename survives restart and that userData is isolated via `AGENT_EMERGE_USER_DATA`.
 - 2026-11-24: Extracted the article figures (docs/references/dena-harness-app-screens.md); decisions/0004 adds Phase 1.5 dashboard, AI generation in Phase 2, routines-while-running, layout.
+- 2026-11-24: Task 5 done. Provenance local / symlink (+ enclosing git repo) / skills-cli (+ lock upstream) / plugin (+ marketplace upstream, version) / broken-link. Plugin skills found via skills/, plugin.json, and marketplace.json `skills` (real-world layout). Frontmatter via `yaml`.
 
 ## 未確定事項（人間の判断待ち）
 

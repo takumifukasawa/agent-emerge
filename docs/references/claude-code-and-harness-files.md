@@ -15,6 +15,9 @@ Only structure is recorded here, never values. Re-check when Claude Code or agen
 - `plugins/installed_plugins.json`: `{ version, plugins: { "<plugin>@<marketplace>": [ { scope, installPath, version, installedAt, lastUpdated, gitCommitSha? } ] } }`.
   Plugin content under `plugins/cache/<marketplace>/<plugin>/<version>/` (also contains `.in_use/` markers; ignore them).
   `known_marketplaces.json`: marketplace name → `{ source, installLocation, lastUpdated }`.
+  Marketplace manifest: `<installLocation>/.claude-plugin/marketplace.json` → `{ name, owner, metadata, plugins: [ { name, source, description, skills?: ["./dir", …] } ] }`.
+  **Where a plugin's skills live varies**: `skills/<name>/SKILL.md` (default), paths in `plugin.json` `skills`, or paths declared by the
+  marketplace entry's `skills` (observed: no `plugin.json` at all, skill dirs at the plugin root). The adapter checks all three.
 - `projects/<encoded path>/`: session logs `<uuid>.jsonl` and `memory/` (`MEMORY.md` index + one file per memory).
   Encoded path = absolute project path with every non-alphanumeric char replaced by `-`.
 

@@ -4,12 +4,29 @@
     "FIXTURE_API_KEY": "fixture-value-not-a-secret",
     "FIXTURE_PLAIN": "visible"
   },
-  "permissions": { "allow": ["Bash(ls *)"], "deny": ["Bash(rm -rf *)"] },
+  "permissions": {
+    "allow": [
+      "Bash(ls *)"
+    ],
+    "deny": [
+      "Bash(rm -rf *)"
+    ]
+  },
   "hooks": {
-    "SessionStart": [{ "hooks": [{ "type": "command", "command": "echo fixture-hook" }] }]
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo fixture-hook"
+          }
+        ]
+      }
+    ]
   },
   "enabledPlugins": {
     "demo@fixture-market": true,
-    "other@fixture-market": false
+    "other@fixture-market": false,
+    "rooted@fixture-market": true
   }
 }

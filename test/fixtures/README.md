@@ -24,6 +24,8 @@ Symlinks are relative and committed as symlinks (on Windows, clone with `core.sy
 | `.claude/skills/demo-skill` + plugin `demo` skill `demo-skill` | same name, user vs. plugin | warning: **name collision** |
 | plugin `demo@fixture-market` | installed + enabled | plugin skill `demo-skill` listed, enabled |
 | plugin `other@fixture-market` | installed, disabled in `enabledPlugins` | plugin skill `other-skill` listed as disabled |
+| plugin `rooted@fixture-market` | no `plugin.json`; skill at the plugin root, declared by `marketplace.json` `skills` | plugin skill `rooted-skill` listed, enabled |
+| `.claude/plugins/known_marketplaces.json` | github source `fixture-owner/fixture-market` | plugin upstream url = `https://github.com/fixture-owner/fixture-market.git`, ref = installed version / commit |
 | `.claude/CLAUDE.md` | `@shared/style.md` import | expanded content includes "Style (imported)" |
 | `.claude/settings.json` `env.FIXTURE_API_KEY`, `.claude.json` MCP `env.FIXTURE_TOKEN` | secret-looking keys | **masked** by default; `FIXTURE_PLAIN` / `FIXTURE_REGION` not masked |
 | settings layers | user `model=fixture-model`, project `model=fixture-model-project`, local `env.FIXTURE_PLAIN=from-local` | effective `model` from project, `env.FIXTURE_PLAIN` from local |

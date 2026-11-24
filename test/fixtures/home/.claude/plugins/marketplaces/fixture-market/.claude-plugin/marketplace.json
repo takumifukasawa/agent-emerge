@@ -1,0 +1,9 @@
+{
+  "name": "fixture-market",
+  "owner": { "name": "fixture-owner" },
+  "plugins": [
+    { "name": "demo", "source": "./demo", "description": "Fixture plugin (enabled)." },
+    { "name": "other", "source": "./other", "description": "Fixture plugin (installed, disabled)." },
+    { "name": "rooted", "source": "./rooted", "description": "Fixture plugin without plugin.json.", "skills": ["./rooted-skill"] }
+  ]
+}
