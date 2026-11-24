@@ -1,7 +1,7 @@
 # MVP read-only viewer
 
 - 開始: 2026-11-24
-- 状態: 計画中
+- 状態: 進行中
 - 関連: docs/decisions/0001, docs/spec/mvp-readonly-viewer.md, docs/architecture.md
 
 ## 目的（何ができれば完了か）
@@ -17,7 +17,7 @@ The acceptance criteria in `docs/spec/mvp-readonly-viewer.md` are all met and `h
 
 | # | タスク | 状態 | 備考 |
 |---|---|---|---|
-| 1 | Scaffold: electron-vite + React + TS + zustand, vitest, Playwright (Electron); wire into `.harness/checks.sh` | 未着手 | contextIsolation on, nodeIntegration off |
+| 1 | Scaffold: electron-vite + React + TS + zustand, vitest, Playwright (Electron); wire into `.harness/checks.sh` | 完了 | contextIsolation on, nodeIntegration off |
 | 2 | Structural tests for architecture invariants (fsread/gitread only, no write IPC, no network) | 未着手 | turn 「未強制」 rows into 強制済 |
 | 3 | Fixtures: fictional home with 2 accounts, a source repo, a harness project, cases for every warning | 未着手 | paths under /fixture/home or ~ |
 | 4 | `fsread` + `gitread` + account discovery (`~/.claude`, `~/.claude-*`, manual add, display names) | 未着手 | |
@@ -39,7 +39,10 @@ The acceptance criteria in `docs/spec/mvp-readonly-viewer.md` are all met and `h
 
 - 2026-11-24: Read the DeNA article, agreed scope, wrote spec / architecture / this plan, added `scripts/check-no-leaks.sh`.
 
+- 2026-11-24: Task 1 done. Electron 45 / electron-vite 6 / Vite 8 / TS 7 / React 19 / zustand 5. Preload is built as CJS (`index.cjs`) so the renderer can stay sandboxed. Checks: typecheck (fast), unit >0, e2e launch >0.
+
 ## 未確定事項（人間の判断待ち）
 
 - Final app name.
 - Threshold for "description too long".
+- LICENSE file: MIT is decided, but the copyright holder line (real name vs. handle) is not.

@@ -33,3 +33,10 @@
 /.harness/scripts/codex-deny.sh
 /.githooks/pre-commit
 # <<< agent-harness managed
+
+# app
+node_modules/
+out/
+dist/
+test-results/
+playwright-report/

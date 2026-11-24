@@ -22,3 +22,6 @@
 check fast "docs index exists" "test -f docs/README.md || { echo 'docs/README.md が無い。docs の索引。agent-harness の docs-template/README.md から作る。'; exit 1; }"
 check      "doctor: FAIL 0"    "bash .harness/bin/harness doctor || { echo 'doctor が FAIL を報告した。上の FAIL 行の「→」に従って直す。'; exit 1; }"
 check fast "no leaks (paths/emails/tokens)" "bash scripts/check-no-leaks.sh"
+check fast "typecheck"              "npm run --silent typecheck || { echo 'Type errors above. Fix them; do not loosen tsconfig.'; exit 1; }"
+check      "unit tests green (>0)"  "bash scripts/check-tests.sh unit"
+check      "e2e launch smoke (>0)"  "bash scripts/check-tests.sh e2e"

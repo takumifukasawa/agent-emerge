@@ -4,7 +4,7 @@
      実装の細部は縛らない。境界・依存の向き・データの検証点といった不変条件だけを書き、
      可能な限り機械的に強制する（リンタ・構造テスト）。強制手段が無い不変条件は「未強制」と明記する。 -->
 
-Spec: [spec/mvp-readonly-viewer.md](spec/mvp-readonly-viewer.md). The code does not exist yet; the layout below is the target.
+Spec: [spec/mvp-readonly-viewer.md](spec/mvp-readonly-viewer.md). Scaffold exists (task 1); the layout below is the target the remaining tasks fill in.
 
 ## 全体の地図（ドメイン / パッケージの階層）
 
@@ -39,8 +39,8 @@ test/fixtures/ fictional homes (root: /fixture/home or ~-relative). Never real d
 | git is spawned only via `gitread` with an allowlist (`status`, `log`, `rev-parse`, `rev-list`, `for-each-ref`) | structural test (same as above, for `child_process`) | 未強制 |
 | No network / telemetry from the app (child processes `claude` / `git` excepted); no absolute paths in logs | dependency + import scan for http clients in `main` / `renderer` | 未強制 |
 | Secret-looking values are masked by default in the UI | unit test on the masking function + fixture | 未強制 |
-| Renderer runs with `contextIsolation: true`, `nodeIntegration: false` | structural test on BrowserWindow options | 未強制 |
-| Tests are real: vitest and Playwright each report >0 tests | `.harness/checks.sh` | 未強制 |
+| Renderer runs with `contextIsolation: true`, `nodeIntegration: false`, `sandbox: true` | e2e asserts the renderer has no `require`; structural test on BrowserWindow options still to add | 一部強制 |
+| Tests are real: vitest and Playwright each report >0 tests | `scripts/check-tests.sh` via `.harness/checks.sh` | 強制済 |
 
 ## 意図的に許している自由
 
