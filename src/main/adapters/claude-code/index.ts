@@ -48,6 +48,7 @@ async function readSkillDir(
   realPath: string | null
 ): Promise<Skill> {
   const base: Omit<Skill, 'frontmatter' | 'frontmatterError' | 'description' | 'body'> = {
+    warnings: [],
     name,
     scope,
     accountId,

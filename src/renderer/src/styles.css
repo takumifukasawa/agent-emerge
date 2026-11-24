@@ -96,3 +96,5 @@ tr.row[aria-selected='true'] td { background: var(--sel); }
 .diff-file .add { background: var(--ok-bg); color: var(--ok); }
 .diff-file .del { background: var(--bad-bg); color: var(--bad); }
 .diff-file .ctx { color: var(--muted); }
+.warnings { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.warnings .who { color: var(--muted); font-size: 12px; }

@@ -1,6 +1,7 @@
 import type { Across, MatrixRow, Skill, SkillDiff, SkillMatrix } from '@shared/model'
 import type { AccountSnapshot } from '../adapters/claude-code'
 import { diffSkillDirs, hashSkillDir } from './skillCompare'
+import { withWarnings } from './warnings'
 
 /** Compare the user-scope copies of a skill name across accounts (plugin copies are shown, not compared). */
 async function across(copies: Skill[]): Promise<Across> {
@@ -13,7 +14,8 @@ async function across(copies: Skill[]): Promise<Across> {
   return new Set(hashes).size === 1 ? 'same' : 'differs'
 }
 
-export async function buildSkillMatrix(snapshots: AccountSnapshot[]): Promise<SkillMatrix> {
+export async function buildSkillMatrix(raw: AccountSnapshot[]): Promise<SkillMatrix> {
+  const snapshots = raw.map(withWarnings)
   const names = new Set(snapshots.flatMap((s) => s.skills.map((k) => k.name)))
   const rows: MatrixRow[] = []
   for (const name of [...names].sort()) {

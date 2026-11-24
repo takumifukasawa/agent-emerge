@@ -19,7 +19,7 @@ Symlinks are relative and committed as symlinks (on Windows, clone with `core.sy
 | `.claude/skills/locked-skill` | symlink into `~/.agents/skills`, has lock entry | provenance = skills CLI (`fixture-owner/fixture-skills`) |
 | `.claude/skills/broken-link` | symlink to a missing dir | warning: **broken symlink** |
 | `.claude/skills/bad-frontmatter` | no `name` / `description` | warning: **invalid frontmatter** |
-| `.claude/skills/long-description` | description ≈ 1900 chars | warning: **description too long** (threshold TBD, spec open question) |
+| `.claude/skills/long-description` | description ≈ 1900 chars | warning: **description too long** (> 1024 chars, #8) |
 | `.claude/skills/needs-missing` | body calls skill `absent-skill` | warning: **missing dependency** |
 | `.claude/skills/demo-skill` + plugin `demo` skill `demo-skill` | same name, user vs. plugin | warning: **name collision** |
 | plugin `demo@fixture-market` | installed + enabled | plugin skill `demo-skill` listed, enabled |

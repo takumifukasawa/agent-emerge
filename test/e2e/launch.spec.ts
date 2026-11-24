@@ -73,6 +73,23 @@ test('skills matrix compares copies across accounts and shows the diff', async (
     await expect(detail.getByTestId('diff-del')).toHaveText('- Version A of copied-skill.')
     await expect(detail.getByTestId('diff-add')).toHaveText('+ Version B of copied-skill.')
 
+    // warnings: one chip per case (broken-link is already the provenance chip)
+    const chips = (name: string) => row(name).locator('[data-testid="warning"]')
+    await expect(chips('bad-frontmatter')).toHaveAttribute('data-warning', 'invalid-frontmatter')
+    await expect(chips('long-description')).toHaveText('long description')
+    await expect(chips('needs-missing')).toHaveText('needs absent-skill')
+    await expect(chips('demo-skill')).toHaveText(['name collision', 'name collision'])
+    await expect(chips('shared-skill')).toHaveCount(0)
+    await expect(chips('broken-link')).toHaveCount(0)
+
+    await row('needs-missing').click()
+    await expect(detail.getByTestId('detail-warning')).toHaveCount(1)
+    await expect(detail.getByTestId('detail-warning')).toContainText('Calls skill "absent-skill", which is not installed in this account')
+    await row('broken-link').click()
+    await expect(detail.getByTestId('detail-warning')).toHaveAttribute('data-warning', 'broken-link')
+    await row('shared-skill').click()
+    await expect(detail.getByTestId('detail-warnings')).toHaveText('none')
+
     await win.getByLabel('Hide plugin skills').check()
     await expect(row('rooted-skill')).toHaveCount(0)
     await win.getByLabel('Account').selectOption({ label: 'work' })

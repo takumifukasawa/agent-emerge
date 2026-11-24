@@ -53,6 +53,7 @@ Remaining tasks are GitHub issues (label `mvp`); roadmap phases are labelled `ro
 - 2026-11-24: Task 5.5 done: mock with layouts A and B; user picked B (decisions/0005).
 - 2026-11-24: Task 6 done. `buildSkillMatrix` (same real path → same, else sha256 of the folder), `diffSkillAcross` (jsdiff, binary-aware); IPC takes skill name + account ids, never paths. Renderer: layout B sidebar, Skills matrix, detail with diff, light/dark via prefers-color-scheme. e2e covers same / differs / single, diff lines, plugin filter, account scope.
 - 2026-11-24: Before the first push: removed a private claude.ai artifact link from the spec / decisions/0005 and rewrote the two unpushed commits that carried it; `check-no-leaks.sh` now also rejects private workspace links. Decided #8 (1024 chars, in the spec) and #10 (LICENSE added, holder `takumifukasawa`). New rule: no classes in `src/` (tree-shaking), enforced by a structural test; `PrefsStore` → `loadPrefs` / `savePrefs`, `GitArgsError` → `isGitArgsError`.
+- 2026-11-24: Task 7 (#1) done. `src/main/index/warnings.ts`: broken link, invalid frontmatter (missing file / no frontmatter / bad YAML / no name / no description), missing dependency (explicit references only: `Skill tool … "x"`, `Skill(x)`, `skill: "x"`, ``use the `x` skill``; `plugin:name` resolves; disabled plugin skills do not count), name collision (enabled copies only), description > 1024. Chips in the matrix cells, list in the detail pane. Unit tests on both fixture homes + rules; e2e for chips and detail.
 
 ## 未確定事項（人間の判断待ち）
 

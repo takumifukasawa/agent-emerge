@@ -53,7 +53,18 @@ export interface Skill {
   frontmatterError: 'missing-file' | 'no-frontmatter' | 'invalid-yaml' | null
   description: string | null
   body: string | null
+  /** filled by src/main/index/warnings.ts (empty as read by an adapter) */
+  warnings: SkillWarning[]
 }
+
+/** Problems detected read-only (spec: Warnings). */
+export type SkillWarning =
+  | { kind: 'broken-link'; linkTarget: string }
+  | { kind: 'invalid-frontmatter'; reason: 'missing-file' | 'no-frontmatter' | 'invalid-yaml' | 'missing-name' | 'missing-description' }
+  | { kind: 'missing-dependency'; skill: string }
+  /** `others` are labels of the other copies with the same name in this account ("user", "plugin demo@market") */
+  | { kind: 'name-collision'; others: string[] }
+  | { kind: 'description-too-long'; length: number; limit: number }
 
 /** true / false from settings.enabledPlugins; 'unset' when the key is absent */
 export type PluginEnabled = boolean | 'unset'

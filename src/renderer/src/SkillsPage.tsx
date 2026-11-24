@@ -1,18 +1,31 @@
 import type { Account, MatrixRow, Skill } from '@shared/model'
-import { acrossLabel, provenanceLabel } from './labels'
+import { acrossLabel, provenanceLabel, warningLabel } from './labels'
 import { ALL, useAppStore } from './store'
 
-function Chip({ text, tone }: { text: string; tone: string }) {
-  return <span className={`chip ${tone === 'plain' ? '' : tone}`}>{text}</span>
+function Chip({ text, tone, ...data }: { text: string; tone: string; 'data-testid'?: string; 'data-warning'?: string; title?: string }) {
+  return (
+    <span className={`chip ${tone === 'plain' ? '' : tone}`} {...data}>
+      {text}
+    </span>
+  )
 }
 
 function Cell({ skills }: { skills: Skill[] }) {
   if (skills.length === 0) return <span className="none">—</span>
   return (
     <div className="chips">
-      {skills.map((s) => {
+      {skills.flatMap((s) => {
         const l = provenanceLabel(s)
-        return <Chip key={s.path} text={l.text} tone={l.tone} />
+        return [
+          <Chip key={s.path} text={l.text} tone={l.tone} />,
+          // a broken link already says so in its provenance chip
+          ...s.warnings
+            .filter((w) => w.kind !== 'broken-link')
+            .map((w, i) => {
+              const wl = warningLabel(w)
+              return <Chip key={`${s.path}#w${i}`} text={wl.chip} tone={wl.tone} title={wl.detail} data-testid="warning" data-warning={w.kind} />
+            })
+        ]
       })}
     </div>
   )
@@ -39,6 +52,29 @@ function Detail({ row, accounts }: { row: MatrixRow; accounts: Account[] }) {
             <dd>{(row.cells[a.id]?.skills ?? []).map((s) => provenanceLabel(s).text).join(', ') || '—'}</dd>
           </div>
         ))}
+        <dt>Warnings</dt>
+        <dd data-testid="detail-warnings">
+          {(() => {
+            const items = accounts.flatMap((a) =>
+              (row.cells[a.id]?.skills ?? []).flatMap((s) =>
+                s.warnings.map((w, i) => ({ key: `${a.id}|${s.path}|${i}`, who: `${a.displayName} · ${provenanceLabel(s).text}`, w }))
+              )
+            )
+            if (items.length === 0) return 'none'
+            return (
+              <ul className="warnings">
+                {items.map(({ key, who, w }) => {
+                  const wl = warningLabel(w)
+                  return (
+                    <li key={key} data-testid="detail-warning" data-warning={w.kind}>
+                      <Chip text={wl.chip} tone={wl.tone} /> {wl.detail} <span className="who">({who})</span>
+                    </li>
+                  )
+                })}
+              </ul>
+            )
+          })()}
+        </dd>
         <dt>Compared</dt>
         <dd>
           <Chip text={across.text} tone={across.tone} />
