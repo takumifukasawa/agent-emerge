@@ -90,3 +90,31 @@ export async function readJson<T = unknown>(path: string): Promise<JsonResult<T>
 export async function resolveReal(path: string): Promise<string | null> {
   return realpath(path).catch(() => null)
 }
+
+export async function readBytes(path: string): Promise<Buffer | null> {
+  try {
+    return await readFile(path)
+  } catch {
+    return null
+  }
+}
+
+/**
+ * Files under `dir`, as sorted forward-slash relative paths. Does not descend into symlinked dirs (no loops);
+ * symlinked files are included. Skips `.git` and `.DS_Store`.
+ */
+export async function listFilesRecursive(dir: string, limit = 2000): Promise<string[]> {
+  const out: string[] = []
+  const walk = async (rel: string): Promise<void> => {
+    for (const e of await listDir(rel ? `${dir}/${rel}` : dir)) {
+      if (out.length >= limit) return
+      if (e.name === '.git' || e.name === '.DS_Store') continue
+      const childRel = rel ? `${rel}/${e.name}` : e.name
+      if (e.kind === 'dir') await walk(childRel)
+      else if (e.kind === 'file') out.push(childRel)
+      else if (e.kind === 'symlink' && (await isFile(`${dir}/${childRel}`))) out.push(childRel)
+    }
+  }
+  await walk('')
+  return out.sort()
+}

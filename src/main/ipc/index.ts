@@ -3,7 +3,9 @@ import { app, ipcMain } from 'electron'
 import { IpcChannels } from '@shared/ipc'
 import { withCatalog, withDisplayName, withManualRoot, type ManualRootKind, type Prefs } from '@shared/prefs'
 import { buildAppInfo } from '../appInfo'
+import { readClaudeCodeAccount, type AccountSnapshot } from '../adapters/claude-code'
 import { discoverAccounts } from '../index/accounts'
+import { buildSkillMatrix, diffSkillAcross } from '../index/matrix'
 import { PrefsStore } from '../prefs'
 
 // Handlers are read-only, except prefs:* which write only the app's own prefs file (docs/decisions/0002).
@@ -26,7 +28,7 @@ export function registerIpcHandlers(): void {
 
   ipcMain.handle(IpcChannels.getAppInfo, () => buildAppInfo(app.getName(), app.getVersion(), process.platform))
 
-  ipcMain.handle(IpcChannels.listAccounts, async () => {
+  const listAccounts = async () => {
     const p = await prefs
     return discoverAccounts({
       home: homedir(),
@@ -34,6 +36,20 @@ export function registerIpcHandlers(): void {
       manual: p.manualRoots.accounts,
       displayNames: p.displayNames
     })
+  }
+  const snapshots = async (): Promise<AccountSnapshot[]> => {
+    const accounts = (await listAccounts()).filter((a) => a.exists)
+    return Promise.all(accounts.map((a) => readClaudeCodeAccount(a, { home: homedir() })))
+  }
+
+  ipcMain.handle(IpcChannels.listAccounts, listAccounts)
+
+  ipcMain.handle(IpcChannels.getSkillMatrix, async () => buildSkillMatrix(await snapshots()))
+
+  // Arguments name a skill and two account ids, never a path: main resolves them, so the renderer cannot ask for arbitrary files.
+  ipcMain.handle(IpcChannels.getSkillDiff, async (_e, name: unknown, left: unknown, right: unknown) => {
+    if (!isStr(name) || !isStr(left) || !isStr(right)) throw new Error('invalid arguments')
+    return diffSkillAcross(await snapshots(), name, left, right)
   })
 
   ipcMain.handle(IpcChannels.getPrefs, () => prefs)

@@ -22,8 +22,8 @@ The acceptance criteria in `docs/spec/mvp-readonly-viewer.md` are all met and `h
 | 3 | Fixtures: fictional home with 2 accounts, a source repo, a harness project, cases for every warning | 完了 | paths under /fixture-root or ~ |
 | 4 | `fsread` + `gitread` + account discovery (`~/.claude`, `~/.claude-*`, manual add, display names) + prefs persistence | 完了 | prefs.json per decisions/0002 |
 | 5 | claude-code adapter: skills (user / plugin / harness project), provenance, plugins enabled state | 完了 | `src/main/adapters/claude-code`; not yet exposed over IPC (comes with task 6) |
-| 5.5 | UI design mock (HTML) reviewed by the user before building screens | 未着手 | show the agreed layout (roots sidebar / feature tabs / detail pane) next to the article-style layout (features in sidebar); user picks |
-| 6 | Skill × account matrix: hashing, identical/differs, per-file diff | 未着手 | main screen |
+| 5.5 | UI design mock (HTML) reviewed by the user before building screens | 完了 | user picked B (decisions/0005) |
+| 6 | Skill × account matrix: hashing, identical/differs, per-file diff | 完了 | layout B shell + Skills page; warnings column comes with task 7 |
 | 7 | Warnings: broken link, frontmatter, missing skill dependency, name collision, long description | 未着手 | |
 | 8 | CLAUDE.md / AGENTS.md with `@import` expansion; memory viewer | 未着手 | |
 | 9 | Settings layers + effective value with origin; MCP; agents; commands; secret masking | 未着手 | |
@@ -48,10 +48,11 @@ The acceptance criteria in `docs/spec/mvp-readonly-viewer.md` are all met and `h
 - 2026-11-24: User approved decisions/0002 (prefs.json write exception) and 0003 (catalogs + roadmap). Prefs store + `prefs:*` IPC done; structural tests updated and mutation-checked; e2e verifies a rename survives restart and that userData is isolated via `AGENT_EMERGE_USER_DATA`.
 - 2026-11-24: Extracted the article figures (docs/references/dena-harness-app-screens.md); decisions/0004 adds Phase 1.5 dashboard, AI generation in Phase 2, routines-while-running, layout.
 - 2026-11-24: Task 5 done. Provenance local / symlink (+ enclosing git repo) / skills-cli (+ lock upstream) / plugin (+ marketplace upstream, version) / broken-link. Plugin skills found via skills/, plugin.json, and marketplace.json `skills` (real-world layout). Frontmatter via `yaml`.
+- 2026-11-24: Task 5.5 done: mock with layouts A and B; user picked B (decisions/0005).
+- 2026-11-24: Task 6 done. `buildSkillMatrix` (same real path → same, else sha256 of the folder), `diffSkillAcross` (jsdiff, binary-aware); IPC takes skill name + account ids, never paths. Renderer: layout B sidebar, Skills matrix, detail with diff, light/dark via prefers-color-scheme. e2e covers same / differs / single, diff lines, plugin filter, account scope.
 
 ## 未確定事項（人間の判断待ち）
 
 - Final app name.
 - Threshold for "description too long".
 - LICENSE file: MIT is decided, but the copyright holder line (real name vs. handle) is not.
-- UI look: to be decided with a mock (task 5.5); layout leaning per decisions/0004.

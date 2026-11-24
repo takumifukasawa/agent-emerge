@@ -55,3 +55,29 @@ test('a renamed account keeps its name after restart (prefs.json)', async () => 
     await app.close()
   }
 })
+
+test('skills matrix compares copies across accounts and shows the diff', async () => {
+  const app = await launch()
+  try {
+    const win = await app.firstWindow()
+    const row = (name: string) => win.locator(`[data-testid="matrix-row"][data-skill="${name}"]`)
+    await expect(row('shared-skill').getByTestId('across')).toHaveText('same')
+    await expect(row('copied-skill').getByTestId('across')).toHaveText('differs')
+    await expect(row('only-here').getByTestId('across')).toHaveText('work only')
+    await expect(row('other-skill')).toContainText('plugin other (disabled)')
+    await expect(row('broken-link')).toContainText('broken link')
+
+    await row('copied-skill').click()
+    const detail = win.getByTestId('detail')
+    await expect(detail.getByTestId('diff-file')).toContainText('SKILL.md')
+    await expect(detail.getByTestId('diff-del')).toHaveText('- Version A of copied-skill.')
+    await expect(detail.getByTestId('diff-add')).toHaveText('+ Version B of copied-skill.')
+
+    await win.getByLabel('Hide plugin skills').check()
+    await expect(row('rooted-skill')).toHaveCount(0)
+    await win.getByLabel('Account').selectOption({ label: 'work' })
+    await expect(win.getByTestId('matrix-row')).toHaveCount(3)
+  } finally {
+    await app.close()
+  }
+})

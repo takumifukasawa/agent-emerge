@@ -114,10 +114,12 @@ Display names and manually added roots (accounts, sources, catalogs, harness pro
 - **Phase 3**: routines — scheduled review / aggregation; run only while the app is running, missed runs caught up on next launch.
 - **Phase 4**: share to a catalog (deterministic + AI leak scan → PR) and AI recommendations of what to import (priority + reason).
 
-## UI layout
+## UI layout (decisions/0005)
 
-Roots (accounts, sources, catalogs, harness projects) in the sidebar; features as tabs in the main area; a detail pane on the right.
-Follows system light / dark. To be confirmed with a design mock next to the article-style layout (plan task 5.5).
+Sidebar: account picker (`All accounts` + each account) → features (Overview [phase 1.5], Skills, CLAUDE.md, Settings, MCP, Plugins,
+Agents & commands, Memory) → "where they come from" (Sources, Catalogs, Harness projects, with status badges) → Settings + version.
+Main area: the picked feature; Skills with `All accounts` = the matrix. Detail pane on the right. Follows system light / dark.
+Mock: a private claude.ai artifact kept by the owner (not linked).
 
 ## Open questions
 

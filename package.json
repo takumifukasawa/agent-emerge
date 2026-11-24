@@ -26,6 +26,7 @@
     "vitest": "^5.1.1"
   },
   "dependencies": {
+    "diff": "^9.0.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "yaml": "^2.9.1",

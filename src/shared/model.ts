@@ -69,3 +69,44 @@ export interface Plugin {
   enabled: PluginEnabled
   upstream: Upstream
 }
+
+/** How the copies of one skill name compare across the accounts that have it. */
+export type Across = 'same' | 'differs' | 'single' | 'unreadable'
+
+export interface MatrixCell {
+  /** every copy this account has under this name (user + plugin can coexist) */
+  skills: Skill[]
+}
+
+export interface MatrixRow {
+  name: string
+  /** keyed by account id */
+  cells: Record<string, MatrixCell>
+  across: Across
+}
+
+export interface SkillMatrix {
+  accounts: Account[]
+  rows: MatrixRow[]
+}
+
+export type FileDiffStatus = 'same' | 'modified' | 'added' | 'removed' | 'binary-modified'
+
+export interface DiffLine {
+  kind: 'context' | 'add' | 'del'
+  text: string
+}
+
+export interface FileDiff {
+  path: string
+  status: FileDiffStatus
+  /** only for 'modified' text files */
+  lines?: DiffLine[]
+}
+
+export interface SkillDiff {
+  name: string
+  left: { accountId: string; path: string }
+  right: { accountId: string; path: string }
+  files: FileDiff[]
+}
