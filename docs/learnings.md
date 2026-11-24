@@ -28,3 +28,8 @@
 ## 2026-11-24 TypeScript 7 removed `baseUrl`
 - 症状: `TS5102: Option 'baseUrl' has been removed`, `TS5090: Non-relative paths are not allowed`.
 - 対処 / 再発したら: drop `baseUrl`, write `paths` targets as `./src/...`. [harness候補]
+
+## 2026-11-24 e2e timed out only inside `harness check`
+- 症状: the first e2e tests failed (`app-info` never showed the version) during `harness check`, but passed when run alone.
+- 原因: the renderer's `load()` awaited slow IPC (sources' git calls, drift hashing) together with the matrix; under the load of parallel checks it exceeded Playwright's 5 s expect timeout, so nothing rendered.
+- 対処 / 再発したら: keep the first paint on fast IPC only; load slow roots separately (`store.ts` `load()`). Check whether a new IPC call was added to that `Promise.all`.

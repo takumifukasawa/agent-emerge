@@ -1,6 +1,8 @@
 import { useEffect } from 'react'
 import { ALL, useAppStore, type Page } from './store'
+import { HarnessPage, SourcesPage } from './RootsPages'
 import { SkillsPage } from './SkillsPage'
+import { harnessBadge, sourcesBadge } from './labels'
 import './styles.css'
 
 const FEATURES: { page: Page; label: string; note?: string }[] = [
@@ -20,8 +22,9 @@ const ROOTS: { page: Page; label: string }[] = [
 ]
 
 function Sidebar() {
-  const { accounts, scope, setScope, page, setPage, info, matrix } = useAppStore()
+  const { accounts, scope, setScope, page, setPage, info, matrix, sources, harnessProjects } = useAppStore()
   const badge = (p: Page): string => (p === 'skills' && matrix ? String(matrix.rows.length) : '')
+  const rootBadge = (p: Page) => (p === 'sources' ? sourcesBadge(sources) : p === 'harness' ? harnessBadge(harnessProjects) : null)
   return (
     <nav className="side" aria-label="Features">
       <div className="brand">
@@ -52,6 +55,14 @@ function Sidebar() {
         {ROOTS.map((f) => (
           <button key={f.page} type="button" className="nav-item" aria-current={page === f.page ? 'page' : undefined} onClick={() => setPage(f.page)}>
             <span>{f.label}</span>
+            {(() => {
+              const b = rootBadge(f.page)
+              return b?.text ? (
+                <span className={`badge ${b.tone === 'plain' ? '' : b.tone}`} data-testid={`badge-${f.page}`}>
+                  {b.text}
+                </span>
+              ) : null
+            })()}
           </button>
         ))}
       </div>
@@ -84,7 +95,7 @@ export function App() {
   return (
     <div className="app">
       <Sidebar />
-      {page === 'skills' ? <SkillsPage /> : <Placeholder page={page} />}
+      {page === 'skills' ? <SkillsPage /> : page === 'sources' ? <SourcesPage /> : page === 'harness' ? <HarnessPage /> : <Placeholder page={page} />}
     </div>
   )
 }

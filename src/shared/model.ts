@@ -121,3 +121,54 @@ export interface SkillDiff {
   right: { accountId: string; path: string }
   files: FileDiff[]
 }
+
+/** git state of a source, read with allowlisted read-only git subcommands only. */
+export interface SourceGit {
+  /** current branch; null when detached or unknown */
+  branch: string | null
+  /** entries in `git status --porcelain` (modified, staged, untracked) */
+  uncommitted: number
+  /** commits reachable from HEAD that are on no remote-tracking branch */
+  unpushed: number
+  /** url of the `origin` remote (or the first remote); upstream for Phase 2 */
+  remoteUrl: string | null
+}
+
+/** Where skills / harness are authored: a git repo a skill links into, `~/.agents`, or a dir the user added. */
+export interface Source {
+  /** real path */
+  id: string
+  path: string
+  origin: 'auto' | 'manual'
+  exists: boolean
+  /** null when the dir is not a git repo (or git could not read it) */
+  git: SourceGit | null
+  /** skills that resolve into this source */
+  linkedSkills: { accountId: string; name: string }[]
+}
+
+export type HarnessOwnership = 'managed' | 'seed' | 'merge' | 'generated'
+
+export interface DriftEntry {
+  /** path relative to the project, as in the manifest */
+  path: string
+  ownership: HarnessOwnership
+  status: 'modified' | 'missing'
+}
+
+/** A project with `.harness/manifest.json`. */
+export interface HarnessProject {
+  /** real path */
+  id: string
+  path: string
+  origin: 'auto' | 'manual'
+  exists: boolean
+  /** accounts whose `.claude.json` lists this project */
+  accountIds: string[]
+  harnessVersion: string | null
+  harnessSource: string | null
+  /** files the manifest tracks (all ownerships) */
+  trackedFiles: number
+  /** null when the manifest is missing or unreadable */
+  drift: DriftEntry[] | null
+}

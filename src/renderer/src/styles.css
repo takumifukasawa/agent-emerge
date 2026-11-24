@@ -98,3 +98,6 @@ tr.row[aria-selected='true'] td { background: var(--sel); }
 .diff-file .ctx { color: var(--muted); }
 .warnings { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
 .warnings .who { color: var(--muted); font-size: 12px; }
+.nav-item .badge.diff { color: var(--diff); font-weight: 500; }
+.nav-item .badge.bad { color: var(--bad); font-weight: 500; }
+td .chip + .chip, td.name .chip { margin-left: 6px; }

@@ -1,4 +1,4 @@
-import type { Across, Skill, SkillWarning } from '@shared/model'
+import type { Across, HarnessProject, Skill, SkillWarning, Source } from '@shared/model'
 
 export type Tone = 'plain' | 'ok' | 'diff' | 'bad' | 'off'
 
@@ -57,4 +57,21 @@ export function warningLabel(w: SkillWarning): { chip: string; detail: string; t
     case 'description-too-long':
       return { chip: 'long description', detail: `Description is ${w.length} characters (limit ${w.limit})`, tone: 'diff' }
   }
+}
+
+/** Sidebar badge for Sources: unpushed commits first, else sources with uncommitted changes. */
+export function sourcesBadge(sources: Source[] | null): { text: string; tone: Tone } {
+  if (!sources) return { text: '', tone: 'plain' }
+  const unpushed = sources.reduce((n, s) => n + (s.git?.unpushed ?? 0), 0)
+  if (unpushed > 0) return { text: `${unpushed} unpushed`, tone: 'diff' }
+  const dirty = sources.filter((s) => (s.git?.uncommitted ?? 0) > 0).length
+  if (dirty > 0) return { text: `${dirty} uncommitted`, tone: 'diff' }
+  return { text: String(sources.length), tone: 'plain' }
+}
+
+/** Sidebar badge for Harness projects: drifted files across all projects. */
+export function harnessBadge(projects: HarnessProject[] | null): { text: string; tone: Tone } {
+  if (!projects) return { text: '', tone: 'plain' }
+  const drifted = projects.reduce((n, p) => n + (p.drift?.length ?? 0), 0)
+  return drifted > 0 ? { text: `${drifted} drifted`, tone: 'bad' } : { text: String(projects.length), tone: 'plain' }
 }

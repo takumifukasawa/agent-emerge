@@ -5,6 +5,8 @@ import { withCatalog, withDisplayName, withManualRoot, type ManualRootKind, type
 import { buildAppInfo } from '../appInfo'
 import { readClaudeCodeAccount, type AccountSnapshot } from '../adapters/claude-code'
 import { discoverAccounts } from '../index/accounts'
+import { discoverHarnessProjects } from '../index/harness'
+import { discoverSources } from '../index/sources'
 import { buildSkillMatrix, diffSkillAcross } from '../index/matrix'
 import { loadPrefs, savePrefs } from '../prefs'
 
@@ -51,6 +53,14 @@ export function registerIpcHandlers(): void {
     if (!isStr(name) || !isStr(left) || !isStr(right)) throw new Error('invalid arguments')
     return diffSkillAcross(await snapshots(), name, left, right)
   })
+
+  ipcMain.handle(IpcChannels.listSources, async () =>
+    discoverSources({ home: homedir(), snapshots: await snapshots(), manual: (await prefs).manualRoots.sources })
+  )
+
+  ipcMain.handle(IpcChannels.listHarnessProjects, async () =>
+    discoverHarnessProjects({ accounts: (await listAccounts()).filter((a) => a.exists), manual: (await prefs).manualRoots.harnessProjects })
+  )
 
   ipcMain.handle(IpcChannels.getPrefs, () => prefs)
 

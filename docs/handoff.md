@@ -8,7 +8,7 @@
 ## いま何をしているか（1〜3 行）
 
 Building the MVP read-only viewer (Electron) for Claude Code skills / harness, per account. Plan: `docs/plans/active/mvp-readonly-viewer.md`.
-Done through task 7 (skills matrix with diffs + warnings, layout B). Remaining work is GitHub issues #1–#14.
+Done through task 7 and task 10 (skills matrix with diffs + warnings; sources + harness drift; layout B). Remaining work is GitHub issues #1–#14.
 
 ## 状態
 
@@ -21,15 +21,15 @@ Done through task 7 (skills matrix with diffs + warnings, layout B). Remaining w
 | Skills matrix + diff UI (layout B) | 検証済み | `test/e2e/launch.spec.ts`, `harness check` |
 | No-classes rule (tree-shaking) | 強制済（構造テスト） | `AGENTS.md`, `test/unit/architecture.test.ts` |
 | Warnings (#1) | 検証済み | `src/main/index/warnings.ts`, `test/unit/warnings.test.ts`, e2e |
-| Remaining MVP tasks 8–12 | 未着手 | GitHub issues `gh issue list --label mvp` |
+| Sources + harness drift (#4) | 検証済み | `src/main/index/sources.ts`, `harness.ts`, `test/unit/roots.test.ts`, e2e |
+| Remaining MVP tasks 8, 9, 11, 12 | 未着手 | GitHub issues `gh issue list --label mvp` |
 | Pushed to GitHub | push 済（`origin/main`、2026-11-24） | `git log --branches --not --remotes` |
 
 ## NEXT（依存順。順序制約があれば明記）
 
-1. #4 sources + harness projects (drift) — feeds sidebar badges; source git warnings (uncommitted / unpushed) land here, not in #1.
-2. #2 CLAUDE.md + memory, #3 settings / MCP / masking — independent of each other.
-3. #5 catalogs (needs a new catalog fixture), #6 file watching, #7 dmg.
-4. After the MVP: #11 Phase 1.5 dashboard (needs a short spec first).
+1. #2 CLAUDE.md + memory, #3 settings / MCP / masking — independent of each other.
+2. #5 catalogs (needs a new catalog fixture), #6 file watching, #7 dmg.
+3. After the MVP: #11 Phase 1.5 dashboard (needs a short spec first).
 
 ## 未確定事項（人間の判断待ち）
 

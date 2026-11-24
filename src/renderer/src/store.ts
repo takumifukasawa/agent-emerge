@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import type { AppInfo } from '@shared/ipc'
-import type { Account, SkillDiff, SkillMatrix } from '@shared/model'
+import type { Account, HarnessProject, SkillDiff, SkillMatrix, Source } from '@shared/model'
 
 export type Page = 'overview' | 'skills' | 'claude-md' | 'settings' | 'mcp' | 'plugins' | 'agents' | 'memory' | 'sources' | 'catalogs' | 'harness'
 export const ALL = 'all'
@@ -9,6 +9,10 @@ interface AppState {
   info: AppInfo | null
   accounts: Account[]
   matrix: SkillMatrix | null
+  sources: Source[] | null
+  harnessProjects: HarnessProject[] | null
+  /** set when reading sources / harness projects failed */
+  rootsError: string | null
   page: Page
   /** ALL or an account id */
   scope: string
@@ -30,6 +34,9 @@ export const useAppStore = create<AppState>((set, get) => ({
   info: null,
   accounts: [],
   matrix: null,
+  sources: null,
+  harnessProjects: null,
+  rootsError: null,
   page: 'skills',
   scope: ALL,
   selectedSkill: null,
@@ -37,6 +44,10 @@ export const useAppStore = create<AppState>((set, get) => ({
   query: '',
   hidePlugins: false,
   async load() {
+    // roots (git state, drift) are slower; they must not hold back the first paint
+    const failed = (e: unknown) => set({ rootsError: e instanceof Error ? e.message : String(e) })
+    void api().listSources().then((sources) => set({ sources }), failed)
+    void api().listHarnessProjects().then((harnessProjects) => set({ harnessProjects }), failed)
     const [info, accounts, matrix] = await Promise.all([api().getAppInfo(), api().listAccounts(), api().getSkillMatrix()])
     set({ info, accounts, matrix })
   },

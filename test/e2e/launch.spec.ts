@@ -98,3 +98,27 @@ test('skills matrix compares copies across accounts and shows the diff', async (
     await app.close()
   }
 })
+
+test('sources and harness projects show git state, drift and sidebar badges', async () => {
+  const app = await launch()
+  try {
+    const win = await app.firstWindow()
+    await expect(win.getByTestId('badge-sources')).toHaveText('1 unpushed')
+    await expect(win.getByTestId('badge-harness')).toHaveText('2 drifted')
+
+    await win.getByRole('button', { name: /Sources/ }).click()
+    const repo = win.locator('[data-testid="source-row"][data-path$="skills-repo"]')
+    await expect(repo.getByTestId('unpushed')).toHaveText('1 unpushed')
+    await expect(repo.getByTestId('uncommitted')).toHaveText('1 uncommitted')
+    await expect(repo).toContainText('shared-skill')
+    await expect(win.locator('[data-testid="source-row"][data-path$=".agents"]')).toContainText('not a git repo')
+
+    await win.getByRole('button', { name: /Harness projects/ }).click()
+    const rows = win.getByTestId('harness-row')
+    await expect(rows).toHaveCount(1)
+    await expect(rows).toHaveAttribute('data-path', /harness-project$/)
+    await expect(rows.getByTestId('drift')).toHaveText([/modified.*\.harness\/drifted\.sh/, /missing.*\.harness\/missing\.sh/])
+  } finally {
+    await app.close()
+  }
+})
