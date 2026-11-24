@@ -13,6 +13,7 @@ const api: AgentEmergeApi = {
   listSettings: () => ipcRenderer.invoke(IpcChannels.listSettings),
   listMcpServers: () => ipcRenderer.invoke(IpcChannels.listMcpServers),
   listAgentsAndCommands: () => ipcRenderer.invoke(IpcChannels.listAgentsAndCommands),
+  listCatalogs: () => ipcRenderer.invoke(IpcChannels.listCatalogs),
   getPrefs: () => ipcRenderer.invoke(IpcChannels.getPrefs),
   setDisplayName: (id, name) => ipcRenderer.invoke(IpcChannels.setDisplayName, id, name),
   setManualRoot: (kind, path, add) => ipcRenderer.invoke(IpcChannels.setManualRoot, kind, path, add),

@@ -1,8 +1,8 @@
-import type { Account, MatrixRow, Skill } from '@shared/model'
-import { acrossLabel, provenanceLabel, warningLabel } from './labels'
+import type { Account, CatalogEntry, MatrixRow, Skill } from '@shared/model'
+import { acrossLabel, catalogStateLabel, provenanceLabel, warningLabel } from './labels'
 import { ALL, useAppStore } from './store'
 
-function Chip({ text, tone, ...data }: { text: string; tone: string; 'data-testid'?: string; 'data-warning'?: string; title?: string }) {
+function Chip({ text, tone, ...data }: { text: string; tone: string; 'data-testid'?: string; 'data-warning'?: string; 'data-state'?: string; title?: string }) {
   return (
     <span className={`chip ${tone === 'plain' ? '' : tone}`} {...data}>
       {text}
@@ -10,10 +10,14 @@ function Chip({ text, tone, ...data }: { text: string; tone: string; 'data-testi
   )
 }
 
-function Cell({ skills }: { skills: Skill[] }) {
-  if (skills.length === 0) return <span className="none">—</span>
+function Cell({ skills, catalog }: { skills: Skill[]; catalog: CatalogEntry[] }) {
+  if (skills.length === 0 && catalog.length === 0) return <span className="none">—</span>
   return (
     <div className="chips">
+      {catalog.map((c) => {
+        const l = catalogStateLabel(c.state)
+        return <Chip key={`cat:${c.skill.path}`} text={l.text} tone={l.tone} title={`${c.catalogName}${c.skill.plugin ? ` · plugin ${c.skill.plugin}${c.skill.version ? ` ${c.skill.version}` : ''}` : ''}`} data-testid="catalog-state" data-state={c.state} />
+      })}
       {skills.flatMap((s) => {
         const l = provenanceLabel(s)
         return [
@@ -117,7 +121,7 @@ export function SkillsPage() {
   const visible = (s: Skill): boolean => !(hidePlugins && s.scope === 'plugin')
   const rows = matrix.rows.filter((r) => {
     if (query && !r.name.toLowerCase().includes(query.toLowerCase())) return false
-    return accounts.some((a) => (r.cells[a.id]?.skills ?? []).some(visible))
+    return accounts.some((a) => (r.cells[a.id]?.skills ?? []).some(visible) || (r.cells[a.id]?.catalog.length ?? 0) > 0)
   })
   const selected = rows.find((r) => r.name === selectedSkill) ?? null
   return (
@@ -169,7 +173,7 @@ export function SkillsPage() {
                       <td className="name">{r.name}</td>
                       {accounts.map((acc) => (
                         <td key={acc.id}>
-                          <Cell skills={(r.cells[acc.id]?.skills ?? []).filter(visible)} />
+                          <Cell skills={(r.cells[acc.id]?.skills ?? []).filter(visible)} catalog={r.cells[acc.id]?.catalog ?? []} />
                         </td>
                       ))}
                       {scope === ALL && (

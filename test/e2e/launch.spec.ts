@@ -186,3 +186,45 @@ test('settings show the winning layer, MCP / agents / commands are listed, secre
     await app.close()
   }
 })
+
+test('a catalog clone attached to an account shows not installed / installed / differs in the matrix', async () => {
+  const app = await launch()
+  try {
+    const win = await app.firstWindow()
+    await win.getByRole('button', { name: /Catalogs/ }).click()
+    await win.getByLabel('Catalog account').selectOption({ label: 'default' })
+    for (const dir of ['dev/catalog-skills', 'dev/catalog-market']) {
+      await win.getByLabel('Catalog path').fill(join(fx.home, dir))
+      await win.getByRole('button', { name: 'Attach' }).click()
+    }
+    await expect(win.getByTestId('catalog-row')).toHaveCount(2)
+    await expect(win.locator('[data-testid="catalog-row"][data-layout="marketplace"]')).toContainText('team-helper')
+    await expect(win.getByTestId('badge-catalogs')).toHaveText('2')
+
+    await win.getByRole('button', { name: /^Skills/ }).click()
+    const state = (name: string) => win.locator(`[data-testid="matrix-row"][data-skill="${name}"] [data-testid="catalog-state"]`)
+    await expect(state('copied-skill')).toHaveText('in catalog, installed')
+    await expect(state('demo-skill')).toHaveText('catalog version differs')
+    await expect(state('catalog-only')).toHaveText('in catalog, not installed')
+    await expect(state('team-helper')).toHaveText('in catalog, not installed')
+
+    // survives a restart (prefs.json), and detaching removes the rows
+    await app.close()
+    const again = await launch()
+    try {
+      const w = await again.firstWindow()
+      await expect(w.locator('[data-testid="matrix-row"][data-skill="catalog-only"]')).toHaveCount(1)
+      await w.getByRole('button', { name: /Catalogs/ }).click()
+      await w.getByRole('button', { name: 'Detach' }).first().click()
+      await expect(w.getByTestId('catalog-row')).toHaveCount(1)
+      await w.getByRole('button', { name: 'Detach' }).first().click()
+      await expect(w.getByTestId('catalog-row')).toHaveCount(0)
+      await w.getByRole('button', { name: /^Skills/ }).click()
+      await expect(w.locator('[data-testid="matrix-row"][data-skill="catalog-only"]')).toHaveCount(0)
+    } finally {
+      await again.close()
+    }
+  } finally {
+    await app.close().catch(() => undefined)
+  }
+})

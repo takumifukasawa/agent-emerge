@@ -1,6 +1,6 @@
 // IPC contract between main and renderer. Read-only by design (docs/architecture.md):
 // the only channels that write are prefs:*, and they write only the app's own prefs file (docs/decisions/0002).
-import type { Account, AgentOrCommand, HarnessProject, InstructionsDoc, McpServer, MemoryGroup, SettingsView, SkillDiff, SkillMatrix, Source } from './model'
+import type { Account, AgentOrCommand, Catalog, HarnessProject, InstructionsDoc, McpServer, MemoryGroup, SettingsView, SkillDiff, SkillMatrix, Source } from './model'
 import type { CatalogRoot, ManualRootKind, Prefs } from './prefs'
 
 export interface AppInfo {
@@ -21,6 +21,7 @@ export const IpcChannels = {
   listSettings: 'config:layers',
   listMcpServers: 'mcp:list',
   listAgentsAndCommands: 'agents:list',
+  listCatalogs: 'catalogs:list',
   getPrefs: 'prefs:get',
   setDisplayName: 'prefs:setDisplayName',
   setManualRoot: 'prefs:setManualRoot',
@@ -42,6 +43,8 @@ export interface AgentEmergeApi {
   listSettings(): Promise<SettingsView[]>
   listMcpServers(): Promise<McpServer[]>
   listAgentsAndCommands(): Promise<AgentOrCommand[]>
+  /** catalogs attached in prefs, read from their local clones */
+  listCatalogs(): Promise<Catalog[]>
   getPrefs(): Promise<Prefs>
   /** name null / empty resets to the default name */
   setDisplayName(id: string, name: string | null): Promise<Prefs>

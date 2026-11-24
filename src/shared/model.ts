@@ -87,6 +87,8 @@ export type Across = 'same' | 'differs' | 'single' | 'unreadable'
 export interface MatrixCell {
   /** every copy this account has under this name (user + plugin can coexist) */
   skills: Skill[]
+  /** the same name in catalogs attached to this account */
+  catalog: CatalogEntry[]
 }
 
 export interface MatrixRow {
@@ -279,4 +281,38 @@ export interface AgentOrCommand {
   path: string
   description: string | null
   raw: string
+}
+
+export type CatalogLayout = 'marketplace' | 'skills-repo' | 'unknown'
+
+export interface CatalogSkill {
+  name: string
+  /** skill dir inside the catalog clone */
+  path: string
+  /** marketplace layout: the plugin that ships it */
+  plugin: string | null
+  /** marketplace layout: the plugin's version */
+  version: string | null
+  description: string | null
+}
+
+/** A local clone of a catalog repo attached to an account (decisions/0003). No fetch, no install. */
+export interface Catalog {
+  accountId: string
+  path: string
+  exists: boolean
+  layout: CatalogLayout
+  /** marketplace name, else the dir name */
+  name: string
+  skills: CatalogSkill[]
+}
+
+/** How a catalog skill relates to what the account has installed under the same name. */
+export type CatalogState = 'not-installed' | 'installed' | 'differs'
+
+export interface CatalogEntry {
+  catalogPath: string
+  catalogName: string
+  skill: CatalogSkill
+  state: CatalogState
 }

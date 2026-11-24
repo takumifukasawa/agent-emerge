@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import type { Account } from '@shared/model'
 import { useAppStore } from './store'
 
@@ -116,6 +117,85 @@ export function HarnessPage() {
                         ))}
                       </ul>
                     )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
+    </main>
+  )
+}
+
+export function CatalogsPage() {
+  const { catalogs, accounts, scope, catalogError, setCatalog } = useAppStore()
+  const [path, setPath] = useState('')
+  const [accountId, setAccountId] = useState('')
+  const target = accountId || (scope !== 'all' ? scope : accounts[0]?.id) || ''
+  const list = (catalogs ?? []).filter((c) => scope === 'all' || c.accountId === scope)
+  return (
+    <main className="main">
+      <div className="head">
+        <div>
+          <h1>Catalogs</h1>
+          <p>Local clones of catalog repos (a plugin marketplace or a skills repo), attached per account. Clone them yourself; nothing is fetched or installed.</p>
+        </div>
+      </div>
+      <form
+        className="filters"
+        onSubmit={(e) => {
+          e.preventDefault()
+          const p = path.trim()
+          if (!p || !target) return
+          setPath('') // clear now: clearing after the IPC returns would wipe whatever was typed meanwhile
+          void setCatalog(target, p, true)
+        }}
+      >
+        <select aria-label="Catalog account" value={target} onChange={(e) => setAccountId(e.target.value)}>
+          {accounts.map((a) => (
+            <option key={a.id} value={a.id}>
+              {a.displayName}
+            </option>
+          ))}
+        </select>
+        <input type="text" placeholder="Path of a local catalog clone" aria-label="Catalog path" value={path} onChange={(e) => setPath(e.target.value)} style={{ flex: 1 }} />
+        <button type="submit" className="chip tab">
+          Attach
+        </button>
+      </form>
+      {catalogError && <p className="empty">Catalog error: {catalogError}</p>}
+      <div className="table-wrap">
+        {!catalogs ? (
+          <p className="empty">Loading…</p>
+        ) : list.length === 0 ? (
+          <p className="empty">No catalogs attached.</p>
+        ) : (
+          <table data-testid="catalogs">
+            <thead>
+              <tr>
+                <th scope="col">Catalog</th>
+                <th scope="col">Layout</th>
+                <th scope="col">Account</th>
+                <th scope="col">Skills</th>
+                <th scope="col" />
+              </tr>
+            </thead>
+            <tbody>
+              {list.map((c) => (
+                <tr key={`${c.accountId}|${c.path}`} data-testid="catalog-row" data-layout={c.layout}>
+                  <td className="name" title={c.path}>
+                    {c.name}
+                    {!c.exists && <Chip text="missing" tone="bad" />}
+                    <div className="who">{c.path}</div>
+                  </td>
+                  <td>{c.layout}</td>
+                  <td>{nameOf(accounts, c.accountId)}</td>
+                  <td data-testid="catalog-skills">{c.skills.map((s) => s.name).join(', ') || '—'}</td>
+                  <td>
+                    <button type="button" className="chip tab" onClick={() => void setCatalog(c.accountId, c.path, false)}>
+                      Detach
+                    </button>
                   </td>
                 </tr>
               ))}

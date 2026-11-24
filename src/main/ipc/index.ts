@@ -11,6 +11,7 @@ import { defaultManagedSettingsPath, mergeSettings, readAccountLayers, readAgent
 import { discoverAccounts } from '../index/accounts'
 import { discoverHarnessProjects } from '../index/harness'
 import { discoverSources } from '../index/sources'
+import { readCatalog } from '../index/catalogs'
 import { buildSkillMatrix, diffSkillAcross } from '../index/matrix'
 import { loadPrefs, savePrefs } from '../prefs'
 
@@ -50,7 +51,11 @@ export function registerIpcHandlers(): void {
 
   ipcMain.handle(IpcChannels.listAccounts, listAccounts)
 
-  ipcMain.handle(IpcChannels.getSkillMatrix, async () => buildSkillMatrix(await snapshots()))
+  const catalogs = async () => Promise.all((await prefs).catalogs.map(readCatalog))
+
+  ipcMain.handle(IpcChannels.getSkillMatrix, async () => buildSkillMatrix(await snapshots(), await catalogs()))
+
+  ipcMain.handle(IpcChannels.listCatalogs, () => catalogs())
 
   // Arguments name a skill and two account ids, never a path: main resolves them, so the renderer cannot ask for arbitrary files.
   ipcMain.handle(IpcChannels.getSkillDiff, async (_e, name: unknown, left: unknown, right: unknown) => {

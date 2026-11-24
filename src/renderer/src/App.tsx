@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { ALL, useAppStore, type Page } from './store'
 import { AgentsPage, McpPage, SettingsPage } from './ConfigPages'
 import { InstructionsPage, MemoryPage } from './DocsPages'
-import { HarnessPage, SourcesPage } from './RootsPages'
+import { CatalogsPage, HarnessPage, SourcesPage } from './RootsPages'
 import { SkillsPage } from './SkillsPage'
 import { harnessBadge, sourcesBadge } from './labels'
 import './styles.css'
@@ -24,9 +24,9 @@ const ROOTS: { page: Page; label: string }[] = [
 ]
 
 function Sidebar() {
-  const { accounts, scope, setScope, page, setPage, info, matrix, sources, harnessProjects } = useAppStore()
+  const { accounts, scope, setScope, page, setPage, info, matrix, sources, harnessProjects, catalogs } = useAppStore()
   const badge = (p: Page): string => (p === 'skills' && matrix ? String(matrix.rows.length) : '')
-  const rootBadge = (p: Page) => (p === 'sources' ? sourcesBadge(sources) : p === 'harness' ? harnessBadge(harnessProjects) : null)
+  const rootBadge = (p: Page) => (p === 'sources' ? sourcesBadge(sources) : p === 'harness' ? harnessBadge(harnessProjects) : p === 'catalogs' && catalogs?.length ? { text: String(catalogs.length), tone: 'plain' as const } : null)
   return (
     <nav className="side" aria-label="Features">
       <div className="brand">
@@ -106,6 +106,8 @@ function Page({ page }: { page: Page }) {
       return <SourcesPage />
     case 'harness':
       return <HarnessPage />
+    case 'catalogs':
+      return <CatalogsPage />
     default:
       return <Placeholder page={page} />
   }

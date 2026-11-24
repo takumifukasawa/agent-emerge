@@ -1,4 +1,4 @@
-import type { Across, HarnessProject, Skill, SkillWarning, Source } from '@shared/model'
+import type { Across, CatalogState, HarnessProject, Skill, SkillWarning, Source } from '@shared/model'
 
 export type Tone = 'plain' | 'ok' | 'diff' | 'bad' | 'off'
 
@@ -74,4 +74,15 @@ export function harnessBadge(projects: HarnessProject[] | null): { text: string;
   if (!projects) return { text: '', tone: 'plain' }
   const drifted = projects.reduce((n, p) => n + (p.drift?.length ?? 0), 0)
   return drifted > 0 ? { text: `${drifted} drifted`, tone: 'bad' } : { text: String(projects.length), tone: 'plain' }
+}
+
+export function catalogStateLabel(s: CatalogState): { text: string; tone: Tone } {
+  switch (s) {
+    case 'not-installed':
+      return { text: 'in catalog, not installed', tone: 'plain' }
+    case 'installed':
+      return { text: 'in catalog, installed', tone: 'ok' }
+    case 'differs':
+      return { text: 'catalog version differs', tone: 'diff' }
+  }
 }

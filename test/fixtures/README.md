@@ -33,6 +33,8 @@ Symlinks are relative and committed as symlinks (on Windows, clone with `core.sy
 | `.claude.json` projects | `harness-project` (has manifest), `plain-project` (no manifest), `missing-project` (does not exist) | only `harness-project` is a harness project |
 | `dev/harness-project/.harness/manifest.json` | `clean.sh` matches; `drifted.sh` edited; `checks.sh` is seed (edits are fine); `AGENTS.md` merge block matches; `missing.sh` absent | drift: **`drifted.sh` modified**, **`missing.sh` missing**; nothing else |
 | `dev/skills-repo` (git, created at test time) | 1 unpushed commit + 1 uncommitted change | warnings: **unpushed**, **uncommitted** |
+| `dev/catalog-skills` | catalog, skills-repo layout: `copied-skill` (same bytes as default's), `demo-skill` (different), `catalog-only` | attached to `default`: **installed**, **differs**, **not installed** |
+| `dev/catalog-market` | catalog, marketplace layout: plugin `team-tools` 1.2.0 with `locked-skill` (same bytes as `~/.agents`'s) and `team-helper` | attached to `default`: **installed**, **not installed** |
 
 ## `clean-home/` — nothing to warn about
 

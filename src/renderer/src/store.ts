@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import type { AppInfo } from '@shared/ipc'
-import type { Account, AgentOrCommand, HarnessProject, InstructionsDoc, McpServer, MemoryGroup, SettingsView, SkillDiff, SkillMatrix, Source } from '@shared/model'
+import type { Account, AgentOrCommand, Catalog, HarnessProject, InstructionsDoc, McpServer, MemoryGroup, SettingsView, SkillDiff, SkillMatrix, Source } from '@shared/model'
 
 export type Page = 'overview' | 'skills' | 'claude-md' | 'settings' | 'mcp' | 'plugins' | 'agents' | 'memory' | 'sources' | 'catalogs' | 'harness'
 export const ALL = 'all'
@@ -22,6 +22,10 @@ interface AppState {
   agentsAndCommands: AgentOrCommand[] | null
   /** set when reading settings / MCP / agents failed */
   configError: string | null
+  catalogs: Catalog[] | null
+  catalogError: string | null
+  /** attach (add=true) or detach a local catalog clone, then reload catalogs and the matrix */
+  setCatalog(accountId: string, path: string, add: boolean): Promise<void>
   page: Page
   /** ALL or an account id */
   scope: string
@@ -53,6 +57,17 @@ export const useAppStore = create<AppState>((set, get) => ({
   mcpServers: null,
   agentsAndCommands: null,
   configError: null,
+  catalogs: null,
+  catalogError: null,
+  async setCatalog(accountId, path, add) {
+    try {
+      await api().setCatalog({ accountId, path }, add)
+      const [catalogs, matrix] = await Promise.all([api().listCatalogs(), api().getSkillMatrix()])
+      set({ catalogs, matrix, catalogError: null })
+    } catch (e) {
+      set({ catalogError: e instanceof Error ? e.message : String(e) })
+    }
+  },
   page: 'skills',
   scope: ALL,
   selectedSkill: null,
@@ -71,6 +86,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     void api().listSettings().then((settings) => set({ settings }), configFailed)
     void api().listMcpServers().then((mcpServers) => set({ mcpServers }), configFailed)
     void api().listAgentsAndCommands().then((agentsAndCommands) => set({ agentsAndCommands }), configFailed)
+    void api().listCatalogs().then((catalogs) => set({ catalogs }), (e: unknown) => set({ catalogError: e instanceof Error ? e.message : String(e) }))
     const [info, accounts, matrix] = await Promise.all([api().getAppInfo(), api().listAccounts(), api().getSkillMatrix()])
     set({ info, accounts, matrix })
   },

@@ -1,0 +1,7 @@
+{
+  "name": "fixture-team-market",
+  "owner": { "name": "fixture-owner" },
+  "plugins": [
+    { "name": "team-tools", "source": "./plugins/team-tools", "description": "Fixture team plugin.", "version": "1.2.0" }
+  ]
+}
