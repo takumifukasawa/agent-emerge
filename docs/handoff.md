@@ -19,13 +19,14 @@ Done through task 6 (skills × accounts matrix with diffs, layout B). Remaining 
 | fsread / gitread / account discovery / prefs.json | 検証済み | `harness check` (unit + e2e) |
 | claude-code adapter (skills, plugins, provenance) | 検証済み | `src/main/adapters/claude-code`, `harness check` |
 | Skills matrix + diff UI (layout B) | 検証済み | `test/e2e/launch.spec.ts`, `harness check` |
+| No-classes rule (tree-shaking) | 強制済（構造テスト） | `AGENTS.md`, `test/unit/architecture.test.ts` |
 | Remaining MVP tasks 7–12 | 未着手 | GitHub issues `gh issue list --label mvp` |
-| Pushed to GitHub | **未 push**（origin は空の公開リポジトリ） | `git log --branches --not --remotes` |
+| Pushed to GitHub | push 済（`origin/main`、2026-11-24） | `git log --branches --not --remotes` |
 
 ## NEXT（依存順。順序制約があれば明記）
 
-1. **Push first** (with the push-gate review: `bash .harness/scripts/push-gate.sh --stamp` after reviewing unpushed commits). The issues reference files that are not on GitHub yet.
-2. #8 (decide the long-description threshold) → then #1 warnings. #1 uses the fixture cases in `test/fixtures/README.md`.
+1. Close #8 and #10 on GitHub (decided; spec and LICENSE updated).
+2. #1 warnings (threshold decided: 1024 chars, #8 can be closed). #1 uses the fixture cases in `test/fixtures/README.md`.
 3. #4 sources + harness projects (drift) — independent of #1; feeds sidebar badges.
 4. #2 CLAUDE.md + memory, #3 settings / MCP / masking — independent of each other.
 5. #5 catalogs (needs a new catalog fixture), #6 file watching, #7 dmg.
@@ -33,9 +34,7 @@ Done through task 6 (skills × accounts matrix with diffs, layout B). Remaining 
 
 ## 未確定事項（人間の判断待ち）
 
-- #8 threshold for "description too long" (proposal 1024 chars)
-- #9 final app name
-- #10 LICENSE copyright holder line
+- #9 final app name — deferred by the user (2026-11-24).
 
 ## このセッションで触らなかったが確認したもの
 

@@ -52,9 +52,8 @@ Remaining tasks are GitHub issues (label `mvp`); roadmap phases are labelled `ro
 - 2026-11-24: Task 5 done. Provenance local / symlink (+ enclosing git repo) / skills-cli (+ lock upstream) / plugin (+ marketplace upstream, version) / broken-link. Plugin skills found via skills/, plugin.json, and marketplace.json `skills` (real-world layout). Frontmatter via `yaml`.
 - 2026-11-24: Task 5.5 done: mock with layouts A and B; user picked B (decisions/0005).
 - 2026-11-24: Task 6 done. `buildSkillMatrix` (same real path → same, else sha256 of the folder), `diffSkillAcross` (jsdiff, binary-aware); IPC takes skill name + account ids, never paths. Renderer: layout B sidebar, Skills matrix, detail with diff, light/dark via prefers-color-scheme. e2e covers same / differs / single, diff lines, plugin filter, account scope.
+- 2026-11-24: Before the first push: removed a private claude.ai artifact link from the spec / decisions/0005 and rewrote the two unpushed commits that carried it; `check-no-leaks.sh` now also rejects private workspace links. Decided #8 (1024 chars, in the spec) and #10 (LICENSE added, holder `takumifukasawa`). New rule: no classes in `src/` (tree-shaking), enforced by a structural test; `PrefsStore` → `loadPrefs` / `savePrefs`, `GitArgsError` → `isGitArgsError`.
 
 ## 未確定事項（人間の判断待ち）
 
-- Threshold for "description too long" — #8 (proposal: 1024 chars). Blocks the long-description part of #1.
-- Final app name — #9.
-- LICENSE copyright holder line — #10.
+- Final app name — #9 (deferred by the user, 2026-11-24).

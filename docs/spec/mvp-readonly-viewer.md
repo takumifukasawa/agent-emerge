@@ -65,7 +65,7 @@ There are four kinds of roots. Ordinary projects that only have `.claude/skills`
 - Missing / invalid frontmatter (`name`, `description`).
 - Missing dependency on another skill (e.g. `grill-me` calls `grilling`, which is not installed).
 - Name collision (e.g. plugin skill vs. user skill with the same name).
-- `description` too long.
+- `description` longer than 1024 characters (the skill spec limit; decided 2026-11-24, #8).
 - Harness drift: managed files in `.harness/manifest.json` that differ from what the manifest records (read the manifest directly; the `harness` CLI is not required).
 - Source git state: uncommitted changes, unpushed commits (allowlisted read-only git subcommands only).
 
@@ -124,4 +124,3 @@ Mock: a private claude.ai artifact kept by the owner (not linked).
 ## Open questions
 
 - Final app name (before public release).
-- Exact "too long" threshold for `description`.
