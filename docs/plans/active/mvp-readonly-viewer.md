@@ -15,6 +15,8 @@ The acceptance criteria in `docs/spec/mvp-readonly-viewer.md` are all met and `h
 
 ## タスク分解（依存順）
 
+Remaining tasks are GitHub issues (label `mvp`); roadmap phases are labelled `roadmap` (#11–#14), open decisions `decision-needed` (#8–#10).
+
 | # | タスク | 状態 | 備考 |
 |---|---|---|---|
 | 1 | Scaffold: electron-vite + React + TS + zustand, vitest, Playwright (Electron); wire into `.harness/checks.sh` | 完了 | contextIsolation on, nodeIntegration off |
@@ -24,13 +26,13 @@ The acceptance criteria in `docs/spec/mvp-readonly-viewer.md` are all met and `h
 | 5 | claude-code adapter: skills (user / plugin / harness project), provenance, plugins enabled state | 完了 | `src/main/adapters/claude-code`; not yet exposed over IPC (comes with task 6) |
 | 5.5 | UI design mock (HTML) reviewed by the user before building screens | 完了 | user picked B (decisions/0005) |
 | 6 | Skill × account matrix: hashing, identical/differs, per-file diff | 完了 | layout B shell + Skills page; warnings column comes with task 7 |
-| 7 | Warnings: broken link, frontmatter, missing skill dependency, name collision, long description | 未着手 | |
-| 8 | CLAUDE.md / AGENTS.md with `@import` expansion; memory viewer | 未着手 | |
-| 9 | Settings layers + effective value with origin; MCP; agents; commands; secret masking | 未着手 | |
-| 10 | Sources (git state) + harness projects (manifest drift) | 未着手 | |
-| 10.5 | Catalogs: attach a local clone to an account; marketplace / skills-repo layouts; not installed / installed / version differs | 未着手 | decisions/0003; needs a catalog fixture |
-| 11 | File watching for the open account | 未着手 | |
-| 12 | macOS dmg build (unsigned) | 未着手 | |
+| 7 | Warnings: broken link, frontmatter, missing skill dependency, name collision, long description | 未着手 (#1) | |
+| 8 | CLAUDE.md / AGENTS.md with `@import` expansion; memory viewer | 未着手 (#2) | |
+| 9 | Settings layers + effective value with origin; MCP; agents; commands; secret masking | 未着手 (#3) | |
+| 10 | Sources (git state) + harness projects (manifest drift) | 未着手 (#4) | |
+| 10.5 | Catalogs: attach a local clone to an account; marketplace / skills-repo layouts; not installed / installed / version differs | 未着手 (#5) | decisions/0003; needs a catalog fixture |
+| 11 | File watching for the open account | 未着手 (#6) | |
+| 12 | macOS dmg build (unsigned) | 未着手 (#7) | |
 
 ## 決定ログ（日付・決めたこと・理由・落選案）
 
@@ -53,6 +55,6 @@ The acceptance criteria in `docs/spec/mvp-readonly-viewer.md` are all met and `h
 
 ## 未確定事項（人間の判断待ち）
 
-- Final app name.
-- Threshold for "description too long".
-- LICENSE file: MIT is decided, but the copyright holder line (real name vs. handle) is not.
+- Threshold for "description too long" — #8 (proposal: 1024 chars). Blocks the long-description part of #1.
+- Final app name — #9.
+- LICENSE copyright holder line — #10.

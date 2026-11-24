@@ -5,4 +5,7 @@
 
 | # | 内容 | 影響範囲 | 起票日 | 状態 |
 |---|---|---|---|---|
-| 1 | 例: `src/x` が `ui` 層から `repository` を直接参照している | 依存方向の不変条件違反 | YYYY-MM-DD | 未着手 / 着手中 / 返済済 |
+| 1 | `skills:matrix` / `skills:diff` re-read and re-hash every account on each call (no snapshot cache) | slow with many skills; revisit with file watching (#6) | 2026-11-24 | 未着手 |
+| 2 | Structural tests are regex-based: computed property access (e.g. `fs['write' + 'File']`) would evade the fsread / prefs write checks | read-only invariant | 2026-11-24 | 未着手 |
+| 3 | "No absolute paths in logs" invariant is unenforced (`docs/architecture.md`) | privacy | 2026-11-24 | 未着手 |
+| 4 | `gitRootOf` in the claude-code adapter walks up to the filesystem root; a source without its own `.git` can be attributed to an enclosing repo | provenance accuracy | 2026-11-24 | 未着手 |
