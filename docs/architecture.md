@@ -35,7 +35,7 @@ test/fixtures/ fictional homes (root: /fixture-root or ~-relative). Never real d
 
 | 不変条件 | 強制手段 | 状態 |
 |---|---|---|
-| No leaks in the repo: no absolute home paths, e-mail addresses or token-like strings in tracked / to-be-tracked files or the staged diff. No allowlist | `scripts/check-no-leaks.sh` (`.harness/checks.sh`, fast → pre-commit) | 強制済 |
+| No leaks in the repo: no absolute home paths, e-mail addresses, token-like strings or private workspace links (claude.ai / Google Docs / Slack) in tracked / to-be-tracked files or the staged diff. No allowlist | `scripts/check-no-leaks.sh` (`.harness/checks.sh`, fast → pre-commit) | 強制済 |
 | Read-only: only `fsread` / `prefs` import fs; `fsread` calls no fs write API; `prefs` writes only `PREFS_FILE` (temp + rename) and never deletes / copies / links; IPC channel names have no write verb outside `prefs:`; `ipcMain` handlers live only in `src/main/ipc/` | `test/unit/architecture.test.ts` | 強制済 |
 | git is spawned only via `gitread` with an allowlist (`status`, `log`, `rev-parse`, `rev-list`, `for-each-ref`) | `test/unit/architecture.test.ts` (only `gitread` imports `child_process`); the allowlist itself gets a unit test with `gitread` (task 4) | 一部強制 |
 | No network / telemetry from the app (child processes `claude` / `git` excepted) | `test/unit/architecture.test.ts` (network modules / calls in `src/`, network / telemetry / auto-update packages in `dependencies`) | 強制済 |

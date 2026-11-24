@@ -80,7 +80,7 @@ Display names and manually added roots (accounts, sources, catalogs, harness pro
 - Values whose key contains `key` / `token` / `secret` / `password` (settings `env`, MCP headers / env) are masked
   as `••••` by default; click to reveal.
 - No telemetry, no network access (child processes `claude` / `git` excepted), no absolute paths in logs.
-- The repository never contains secrets, real local paths or e-mail addresses (enforced by `scripts/check-no-leaks.sh`).
+- The repository never contains secrets, real local paths, e-mail addresses or private workspace links (enforced by `scripts/check-no-leaks.sh`).
 
 ## Acceptance criteria
 
