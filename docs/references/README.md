@@ -5,6 +5,7 @@
 | ファイル | 元 | 取得日 | 何に使うか |
 |---|---|---|---|
 | [claude-code-and-harness-files.md](claude-code-and-harness-files.md) | observed Claude Code dirs + agent-harness 1.3.1 | 2026-11-24 | which files the index layer reads and how drift is computed |
+| [dena-harness-app-screens.md](dena-harness-app-screens.md) | DeNA engineering blog, 2026-07 (figures) | 2026-11-24 | feature inventory to compare our spec / roadmap against |
 
 - 元 URL と取得日を必ず書く（腐敗の検知に使う）。
 - 全文コピーではなく、このプロジェクトが依存している部分の抜粋にする。
