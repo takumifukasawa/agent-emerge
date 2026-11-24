@@ -222,3 +222,61 @@ export interface MemoryGroup {
   index: string | null
   files: MemoryFile[]
 }
+
+/** Settings layers, lowest precedence first (managed wins). */
+export const SETTINGS_LAYERS = ['user', 'project', 'local', 'managed'] as const
+export type SettingsLayerName = (typeof SETTINGS_LAYERS)[number]
+
+export interface SettingsLayer {
+  name: SettingsLayerName
+  path: string
+  status: 'ok' | 'missing' | 'invalid'
+  value: Record<string, unknown> | null
+}
+
+/** One leaf of the effective settings. Arrays are merged across layers (one entry per item). */
+export interface EffectiveSetting {
+  /** dotted path, e.g. "env.FIXTURE_PLAIN"; array items share the array's path */
+  path: string
+  value: unknown
+  from: SettingsLayerName
+  /** lower-precedence layers whose value this one replaced */
+  overrides: { layer: SettingsLayerName; value: unknown }[]
+}
+
+/** Settings as seen by one account, alone or inside one harness project. */
+export interface SettingsView {
+  /** "<accountId>" or "<accountId>|<projectId>" */
+  id: string
+  accountId: string
+  project: { id: string; path: string } | null
+  layers: SettingsLayer[]
+  effective: EffectiveSetting[]
+}
+
+export type McpScope = 'user' | 'local' | 'project'
+
+export interface McpServer {
+  name: string
+  scope: McpScope
+  accountId: string
+  /** the project for local / project scope */
+  projectPath: string | null
+  /** where it is defined */
+  file: string
+  transport: string
+  /** command line or url */
+  target: string
+  raw: unknown
+}
+
+export interface AgentOrCommand {
+  kind: 'agent' | 'command'
+  /** command: path under commands/ without ".md" ("ns:name" for nested dirs); agent: frontmatter name or file name */
+  name: string
+  accountId: string
+  projectPath: string | null
+  path: string
+  description: string | null
+  raw: string
+}

@@ -40,7 +40,7 @@ test/fixtures/ fictional homes (root: /fixture-root or ~-relative). Never real d
 | git is spawned only via `gitread` with an allowlist (`status`, `log`, `rev-parse`, `rev-list`, `for-each-ref`) | `test/unit/architecture.test.ts` (only `gitread` imports `child_process`); the allowlist itself gets a unit test with `gitread` (task 4) | 一部強制 |
 | No network / telemetry from the app (child processes `claude` / `git` excepted) | `test/unit/architecture.test.ts` (network modules / calls in `src/`, network / telemetry / auto-update packages in `dependencies`) | 強制済 |
 | No absolute paths in logs | none yet | 未強制 |
-| Secret-looking values are masked by default in the UI | unit test on the masking function + fixture | 未強制 |
+| Secret-looking values are masked by default in the UI (settings values, raw JSON of layers and MCP servers) | `test/unit/settings.test.ts` (`isSecretKey` / `maskDeep` in `src/shared/mask.ts`) + e2e (fixture `FIXTURE_API_KEY` / `FIXTURE_TOKEN`) | 強制済 |
 | Renderer runs with `contextIsolation: true`, `nodeIntegration: false`, `sandbox: true`, and imports neither `electron` nor Node built-ins | `test/unit/architecture.test.ts` + e2e asserts the renderer has no `require` | 強制済 |
 | Tests are real: vitest and Playwright each report >0 tests | `scripts/check-tests.sh` via `.harness/checks.sh` | 強制済 |
 | No classes in `src/` (tree-shaking): plain functions + interfaces; errors are `Object.assign(new Error(msg), { name })` with an `isXxxError` guard | `test/unit/architecture.test.ts` | 強制済 |

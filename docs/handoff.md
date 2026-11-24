@@ -8,7 +8,7 @@
 ## いま何をしているか（1〜3 行）
 
 Building the MVP read-only viewer (Electron) for Claude Code skills / harness, per account. Plan: `docs/plans/active/mvp-readonly-viewer.md`.
-Done: tasks 7, 8, 10 (skills matrix with diffs + warnings; CLAUDE.md imports + memory; sources + harness drift; layout B). Remaining work is GitHub issues #1–#14.
+Done: tasks 7–10 (skills matrix with diffs + warnings; CLAUDE.md imports + memory; settings / MCP / agents + masking; sources + harness drift; layout B). Remaining work is GitHub issues #1–#14.
 
 ## 状態
 
@@ -23,17 +23,18 @@ Done: tasks 7, 8, 10 (skills matrix with diffs + warnings; CLAUDE.md imports + m
 | Warnings (#1) | 検証済み | `src/main/index/warnings.ts`, `test/unit/warnings.test.ts`, e2e |
 | Sources + harness drift (#4) | 検証済み | `src/main/index/sources.ts`, `harness.ts`, `test/unit/roots.test.ts`, e2e |
 | CLAUDE.md imports + memory (#2) | 検証済み | `src/main/adapters/claude-code/instructions.ts`, `memory.ts`, `test/unit/instructions-memory.test.ts`, e2e |
-| Remaining MVP tasks 9, 11, 12 | 未着手 | GitHub issues `gh issue list --label mvp` |
+| Settings / MCP / agents + masking (#3) | 検証済み | `src/main/adapters/claude-code/settings.ts`, `src/shared/mask.ts`, `test/unit/settings.test.ts`, e2e |
+| Remaining MVP tasks 11, 12 | 未着手 | GitHub issues `gh issue list --label mvp` |
 | Pushed to GitHub | push 済（`origin/main`、2026-11-24） | `git log --branches --not --remotes` |
 
 ## NEXT（依存順。順序制約があれば明記）
 
-1. #3 settings / MCP / masking.
-2. #5 catalogs (needs a new catalog fixture), #6 file watching, #7 dmg.
-3. After the MVP: #11 Phase 1.5 dashboard (needs a short spec first).
+1. #5 catalogs (needs a new catalog fixture), #6 file watching, #7 dmg.
+2. After the MVP: #11 Phase 1.5 dashboard (needs a short spec first).
 
 ## 未確定事項（人間の判断待ち）
 
+- CSS framework: the user is open to adopting one (2026-11-24), later is fine. Styles are hand-written in `src/renderer/src/styles.css` (~120 lines, CSS variables for light / dark). Decide which (and record in `docs/decisions/`) before the UI grows further.
 - #9 final app name — deferred by the user (2026-11-24).
 
 ## このセッションで触らなかったが確認したもの

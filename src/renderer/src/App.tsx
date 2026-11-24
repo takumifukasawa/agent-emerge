@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { ALL, useAppStore, type Page } from './store'
+import { AgentsPage, McpPage, SettingsPage } from './ConfigPages'
 import { InstructionsPage, MemoryPage } from './DocsPages'
 import { HarnessPage, SourcesPage } from './RootsPages'
 import { SkillsPage } from './SkillsPage'
@@ -95,6 +96,12 @@ function Page({ page }: { page: Page }) {
       return <InstructionsPage />
     case 'memory':
       return <MemoryPage />
+    case 'settings':
+      return <SettingsPage />
+    case 'mcp':
+      return <McpPage />
+    case 'agents':
+      return <AgentsPage />
     case 'sources':
       return <SourcesPage />
     case 'harness':

@@ -15,6 +15,8 @@ function launch(): Promise<ElectronApplication> {
   delete env['CLAUDE_CONFIG_DIR']
   // userData (prefs + Chromium caches) inside the temp home so tests never touch the real profile
   env['AGENT_EMERGE_USER_DATA'] = join(fx.home, 'userData')
+  // never read the machine's real managed-settings.json
+  env['AGENT_EMERGE_MANAGED_SETTINGS'] = join(fx.home, 'managed-settings.json')
   return electron.launch({ args: ['.'], env })
 }
 
@@ -144,6 +146,42 @@ test('CLAUDE.md expands imports and memory lists files with their type', async (
     await expect(group.getByTestId('memory-type')).toHaveText('feedback')
     await group.getByTestId('memory-item').click()
     await expect(group.getByTestId('memory-body')).toContainText('Keep answers short.')
+  } finally {
+    await app.close()
+  }
+})
+
+test('settings show the winning layer, MCP / agents / commands are listed, secrets are masked', async () => {
+  const app = await launch()
+  try {
+    const win = await app.firstWindow()
+    await win.getByRole('button', { name: 'Settings', exact: true }).click()
+    await expect(win.getByTestId('settings-view')).toHaveText(['default', 'default · harness-project', 'work'])
+    await win.getByTestId('settings-view').nth(1).click()
+    const detail = win.getByTestId('settings-detail')
+    const row = (p: string) => detail.locator(`[data-testid="effective-row"][data-path="${p}"]`)
+    await expect(row('model').getByTestId('from')).toContainText('project')
+    await expect(row('model').getByTestId('value')).toHaveText('fixture-model-project')
+    await expect(row('env.FIXTURE_PLAIN').getByTestId('from')).toContainText('local')
+    await expect(row('env.FIXTURE_PLAIN').getByTestId('value')).toHaveText('from-local')
+    const key = row('env.FIXTURE_API_KEY').getByTestId('value')
+    await expect(key).toHaveText('••••••••')
+    await key.click()
+    await expect(key).toHaveText('fixture-value-not-a-secret')
+    await detail.getByRole('tab', { name: 'user' }).click()
+    await expect(detail.getByTestId('raw')).toContainText('"FIXTURE_API_KEY": "••••••••"')
+    await expect(detail.getByTestId('raw')).toContainText('"FIXTURE_PLAIN": "visible"')
+
+    await win.getByRole('button', { name: 'MCP' }).click()
+    const mcp = win.locator('[data-testid="mcp-row"][data-name="fixture-mcp"]')
+    await expect(mcp).toContainText('stdio')
+    await mcp.click()
+    await expect(mcp.getByTestId('raw')).toContainText('"FIXTURE_TOKEN": "••••••••"')
+    await expect(mcp.getByTestId('raw')).toContainText('"FIXTURE_REGION": "visible"')
+    await expect(mcp.getByTestId('raw')).not.toContainText('fixture-value-not-a-secret')
+
+    await win.getByRole('button', { name: 'Agents & commands' }).click()
+    await expect(win.getByTestId('agent-row')).toHaveText([/fixture-reviewer.*agent.*Fixture subagent\./, /\/fixture-hello.*command.*Fixture slash command\./])
   } finally {
     await app.close()
   }

@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import type { AppInfo } from '@shared/ipc'
-import type { Account, HarnessProject, InstructionsDoc, MemoryGroup, SkillDiff, SkillMatrix, Source } from '@shared/model'
+import type { Account, AgentOrCommand, HarnessProject, InstructionsDoc, McpServer, MemoryGroup, SettingsView, SkillDiff, SkillMatrix, Source } from '@shared/model'
 
 export type Page = 'overview' | 'skills' | 'claude-md' | 'settings' | 'mcp' | 'plugins' | 'agents' | 'memory' | 'sources' | 'catalogs' | 'harness'
 export const ALL = 'all'
@@ -17,6 +17,11 @@ interface AppState {
   memory: MemoryGroup[] | null
   /** set when reading CLAUDE.md / memory failed */
   docsError: string | null
+  settings: SettingsView[] | null
+  mcpServers: McpServer[] | null
+  agentsAndCommands: AgentOrCommand[] | null
+  /** set when reading settings / MCP / agents failed */
+  configError: string | null
   page: Page
   /** ALL or an account id */
   scope: string
@@ -44,6 +49,10 @@ export const useAppStore = create<AppState>((set, get) => ({
   instructions: null,
   memory: null,
   docsError: null,
+  settings: null,
+  mcpServers: null,
+  agentsAndCommands: null,
+  configError: null,
   page: 'skills',
   scope: ALL,
   selectedSkill: null,
@@ -58,6 +67,10 @@ export const useAppStore = create<AppState>((set, get) => ({
     const docsFailed = (e: unknown) => set({ docsError: e instanceof Error ? e.message : String(e) })
     void api().listInstructions().then((instructions) => set({ instructions }), docsFailed)
     void api().listMemory().then((memory) => set({ memory }), docsFailed)
+    const configFailed = (e: unknown) => set({ configError: e instanceof Error ? e.message : String(e) })
+    void api().listSettings().then((settings) => set({ settings }), configFailed)
+    void api().listMcpServers().then((mcpServers) => set({ mcpServers }), configFailed)
+    void api().listAgentsAndCommands().then((agentsAndCommands) => set({ agentsAndCommands }), configFailed)
     const [info, accounts, matrix] = await Promise.all([api().getAppInfo(), api().listAccounts(), api().getSkillMatrix()])
     set({ info, accounts, matrix })
   },

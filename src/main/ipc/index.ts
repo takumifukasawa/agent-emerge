@@ -1,11 +1,13 @@
 import { homedir } from 'node:os'
 import { app, ipcMain } from 'electron'
 import { IpcChannels } from '@shared/ipc'
+import type { SettingsView } from '@shared/model'
 import { withCatalog, withDisplayName, withManualRoot, type ManualRootKind, type Prefs } from '@shared/prefs'
 import { buildAppInfo } from '../appInfo'
 import { readClaudeCodeAccount, readKnownProjects, type AccountSnapshot } from '../adapters/claude-code'
 import { readAccountInstructions, readProjectInstructions } from '../adapters/claude-code/instructions'
 import { readMemory } from '../adapters/claude-code/memory'
+import { defaultManagedSettingsPath, mergeSettings, readAccountLayers, readAgentsAndCommands, readMcpServers } from '../adapters/claude-code/settings'
 import { discoverAccounts } from '../index/accounts'
 import { discoverHarnessProjects } from '../index/harness'
 import { discoverSources } from '../index/sources'
@@ -79,6 +81,32 @@ export function registerIpcHandlers(): void {
     const accounts = (await listAccounts()).filter((a) => a.exists)
     const groups = await Promise.all(accounts.map(async (a) => readMemory(a.id, a.configDir, await readKnownProjects(a))))
     return groups.flat()
+  })
+
+  // tests point this at a fixture file; the real path is outside the home dir and may not exist
+  const managedPath = process.env['AGENT_EMERGE_MANAGED_SETTINGS'] ?? defaultManagedSettingsPath(process.platform)
+  const projectsOf = async (accountId: string) =>
+    (await harnessProjects()).filter((p) => p.exists && p.accountIds.includes(accountId)).map((p) => ({ id: p.id, path: p.path }))
+
+  ipcMain.handle(IpcChannels.listSettings, async () => {
+    const views: SettingsView[] = []
+    for (const a of (await listAccounts()).filter((x) => x.exists)) {
+      for (const project of [null, ...(await projectsOf(a.id))]) {
+        const layers = await readAccountLayers(a, { managedPath }, project?.path ?? null)
+        views.push({ id: project ? `${a.id}|${project.id}` : a.id, accountId: a.id, project, layers, effective: mergeSettings(layers) })
+      }
+    }
+    return views
+  })
+
+  ipcMain.handle(IpcChannels.listMcpServers, async () => {
+    const accounts = (await listAccounts()).filter((x) => x.exists)
+    return (await Promise.all(accounts.map(async (a) => readMcpServers(a, (await projectsOf(a.id)).map((p) => p.path))))).flat()
+  })
+
+  ipcMain.handle(IpcChannels.listAgentsAndCommands, async () => {
+    const accounts = (await listAccounts()).filter((x) => x.exists)
+    return (await Promise.all(accounts.map(async (a) => readAgentsAndCommands(a, (await projectsOf(a.id)).map((p) => p.path))))).flat()
   })
 
   ipcMain.handle(IpcChannels.getPrefs, () => prefs)

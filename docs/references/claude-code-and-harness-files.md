@@ -11,6 +11,8 @@ Only structure is recorded here, never values. Re-check when Claude Code or agen
   - `mcpServers`: user-scope MCP servers, `{ type, command, args, env }` (stdio) — `env` may hold secrets.
   - Many other keys are caches / UI state; ignore them.
 - `settings.json`: `env`, `permissions`, `hooks`, `enabledPlugins` (`{ "<plugin>@<marketplace>": bool }`), `model`, `extraKnownMarketplaces`, ….
+  Layers (app's model): user `<configDir>/settings.json` < project `<p>/.claude/settings.json` < local `<p>/.claude/settings.local.json` < managed (macOS `/Library/Application Support/ClaudeCode/managed-settings.json`, Linux `/etc/claude-code/…`, Windows `C:\Program Files\ClaudeCode\…`). Scalars / object keys: higher wins; arrays: concatenated across layers.
+  MCP: user = `.claude.json` `mcpServers`; local = `.claude.json` `projects[<p>].mcpServers`; project = `<p>/.mcp.json`. Agents `agents/*.md`, commands `commands/**/*.md` (nested dir → `ns:name`).
 - `skills/<name>/SKILL.md` (often symlinks), `agents/*.md`, `commands/*.md`, `CLAUDE.md` (`@path` imports).
   `@path` imports (as the app reads them): a token at line start or after whitespace, outside code spans / fences; relative to the importing file, `~/` = home, absolute allowed; recursive, at most 5 hops. Project files: `CLAUDE.md`, `CLAUDE.local.md`, `.claude/CLAUDE.md`, `AGENTS.md`.
 - `plugins/installed_plugins.json`: `{ version, plugins: { "<plugin>@<marketplace>": [ { scope, installPath, version, installedAt, lastUpdated, gitCommitSha? } ] } }`.
