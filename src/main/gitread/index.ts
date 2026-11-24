@@ -8,14 +8,17 @@ export type GitSubcommand = (typeof ALLOWED_SUBCOMMANDS)[number]
 // --output (log), --output-directory, -o: write files. Hooks/config overrides can run arbitrary code.
 const FORBIDDEN_ARG = /^(--output(-directory)?(=|$)|-o$|--exec(=|$)|-c$|--config-env(=|$)|--upload-pack(=|$)|--git-dir(=|$)|--work-tree(=|$))/
 
-export class GitArgsError extends Error {}
+// Plain Error tagged by name, no class (tree-shaking; AGENTS.md "No classes").
+const GIT_ARGS_ERROR = 'GitArgsError'
+const gitArgsError = (message: string): Error => Object.assign(new Error(message), { name: GIT_ARGS_ERROR })
+export const isGitArgsError = (e: unknown): e is Error => e instanceof Error && e.name === GIT_ARGS_ERROR
 
 export function validateGitArgs(subcommand: string, args: readonly string[]): asserts subcommand is GitSubcommand {
   if (!(ALLOWED_SUBCOMMANDS as readonly string[]).includes(subcommand)) {
-    throw new GitArgsError(`git subcommand not allowed: ${subcommand}`)
+    throw gitArgsError(`git subcommand not allowed: ${subcommand}`)
   }
   const bad = args.find((a) => FORBIDDEN_ARG.test(a))
-  if (bad !== undefined) throw new GitArgsError(`git argument not allowed: ${bad}`)
+  if (bad !== undefined) throw gitArgsError(`git argument not allowed: ${bad}`)
 }
 
 export type GitResult = { ok: true; stdout: string } | { ok: false; error: string }

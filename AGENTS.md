@@ -62,3 +62,7 @@
 # プロジェクト固有のルール
 
 <!-- ここから下はプロジェクトが書く。目的、ディレクトリ構成、ビルド/テストコマンド、規約、やらないこと -->
+
+## Code style
+
+- **No classes** (tree-shaking). Write plain functions that take their dependencies as arguments, and `interface` / plain objects for data. Errors: `Object.assign(new Error(msg), { name: 'XxxError' })` plus an exported `isXxxError` guard (example: `src/main/gitread`). Enforced by `test/unit/architecture.test.ts`. Third-party classes (`BrowserWindow`, `Map`, `Set`, …) may be used, just not declared.

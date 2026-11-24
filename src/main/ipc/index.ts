@@ -6,7 +6,7 @@ import { buildAppInfo } from '../appInfo'
 import { readClaudeCodeAccount, type AccountSnapshot } from '../adapters/claude-code'
 import { discoverAccounts } from '../index/accounts'
 import { buildSkillMatrix, diffSkillAcross } from '../index/matrix'
-import { PrefsStore } from '../prefs'
+import { loadPrefs, savePrefs } from '../prefs'
 
 // Handlers are read-only, except prefs:* which write only the app's own prefs file (docs/decisions/0002).
 // test/unit/architecture.test.ts checks channel names. Renderer input is untrusted: validate every argument.
@@ -15,12 +15,12 @@ const ROOT_KINDS: readonly ManualRootKind[] = ['accounts', 'sources', 'harnessPr
 const isStr = (v: unknown): v is string => typeof v === 'string' && v.length > 0 && v.length < 4096
 
 export function registerIpcHandlers(): void {
-  const store = new PrefsStore(app.getPath('userData'))
-  let prefs: Promise<Prefs> = store.load().then((l) => l.prefs)
+  const userDataDir = app.getPath('userData')
+  let prefs: Promise<Prefs> = loadPrefs(userDataDir).then((l) => l.prefs)
   const update = (f: (p: Prefs) => Prefs): Promise<Prefs> => {
     prefs = prefs.then(async (p) => {
       const next = f(p)
-      await store.save(next)
+      await savePrefs(userDataDir, next)
       return next
     })
     return prefs

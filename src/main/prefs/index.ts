@@ -1,5 +1,6 @@
 // The ONLY place the app writes (docs/decisions/0002): <userData>/prefs.json, atomically.
 // Structural tests reject any other write target or any delete / copy / link API here.
+// Plain functions, no class (tree-shaking; AGENTS.md "No classes").
 import { mkdir, readFile, rename, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { defaultPrefs, sanitizePrefs, type Prefs } from '@shared/prefs'
@@ -12,31 +13,25 @@ export interface LoadedPrefs {
   invalid: boolean
 }
 
-export class PrefsStore {
-  private readonly PREFS_FILE: string
-
-  constructor(private readonly userDataDir: string) {
-    this.PREFS_FILE = join(userDataDir, PREFS_FILE_NAME)
+export async function loadPrefs(userDataDir: string): Promise<LoadedPrefs> {
+  const PREFS_FILE = join(userDataDir, PREFS_FILE_NAME)
+  let text: string
+  try {
+    text = await readFile(PREFS_FILE, 'utf8')
+  } catch {
+    return { prefs: defaultPrefs(), invalid: false }
   }
-
-  async load(): Promise<LoadedPrefs> {
-    let text: string
-    try {
-      text = await readFile(this.PREFS_FILE, 'utf8')
-    } catch {
-      return { prefs: defaultPrefs(), invalid: false }
-    }
-    try {
-      return { prefs: sanitizePrefs(JSON.parse(text)), invalid: false }
-    } catch {
-      return { prefs: defaultPrefs(), invalid: true }
-    }
+  try {
+    return { prefs: sanitizePrefs(JSON.parse(text)), invalid: false }
+  } catch {
+    return { prefs: defaultPrefs(), invalid: true }
   }
+}
 
-  async save(prefs: Prefs): Promise<void> {
-    await mkdir(this.userDataDir, { recursive: true })
-    const tmpPath = `${this.PREFS_FILE}.tmp-${process.pid}`
-    await writeFile(tmpPath, JSON.stringify(sanitizePrefs(prefs), null, 2) + '\n', 'utf8')
-    await rename(tmpPath, this.PREFS_FILE)
-  }
+export async function savePrefs(userDataDir: string, prefs: Prefs): Promise<void> {
+  const PREFS_FILE = join(userDataDir, PREFS_FILE_NAME)
+  await mkdir(userDataDir, { recursive: true })
+  const tmpPath = `${PREFS_FILE}.tmp-${process.pid}`
+  await writeFile(tmpPath, JSON.stringify(sanitizePrefs(prefs), null, 2) + '\n', 'utf8')
+  await rename(tmpPath, PREFS_FILE)
 }

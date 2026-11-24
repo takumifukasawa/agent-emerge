@@ -144,4 +144,20 @@ describe('architecture invariants (docs/architecture.md)', () => {
     })
     expect(v, 'Set contextIsolation: true, nodeIntegration: false, sandbox: true on every BrowserWindow.').toEqual([])
   })
+
+  it('src/ declares no classes (tree-shaking)', () => {
+    const CLASS_RE = /(^|[^\w.$'"`])class\s+[A-Za-z_$][\w$]*|=\s*class\b|\(\s*class\b/
+    const v = violations((f) =>
+      f.text
+        .split('\n')
+        .filter((line) => !/^\s*(\/\/|\*|\/\*)/.test(line))
+        .filter((line) => CLASS_RE.test(line))
+        .map((line) => `class: ${line.trim()}`)
+    )
+    expect(
+      v,
+      'Do not declare classes (AGENTS.md "No classes"). Use plain functions taking their dependencies as arguments, ' +
+        'plain objects / interfaces for data, and errors as `Object.assign(new Error(msg), { name })` with an `isXxxError` guard (see src/main/gitread).'
+    ).toEqual([])
+  })
 })

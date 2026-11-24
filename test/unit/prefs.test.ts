@@ -2,7 +2,7 @@ import { mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'n
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import { PrefsStore } from '../../src/main/prefs'
+import { loadPrefs, savePrefs } from '../../src/main/prefs'
 import { defaultPrefs, sanitizePrefs, withCatalog, withDisplayName, withManualRoot } from '../../src/shared/prefs'
 
 let dir: string
@@ -11,29 +11,28 @@ beforeEach(() => {
 })
 afterEach(() => rmSync(dir, { recursive: true, force: true }))
 
-describe('PrefsStore', () => {
+describe('prefs file (loadPrefs / savePrefs)', () => {
   it('returns defaults when there is no file, without writing anything', async () => {
-    expect(await new PrefsStore(dir).load()).toEqual({ prefs: defaultPrefs(), invalid: false })
+    expect(await loadPrefs(dir)).toEqual({ prefs: defaultPrefs(), invalid: false })
     expect(readdirSync(dir)).toEqual([])
   })
 
   it('round-trips and leaves only prefs.json behind (atomic write)', async () => {
-    const store = new PrefsStore(dir)
     const p = withDisplayName(defaultPrefs(), '/fixture-root/.claude', 'Company')
-    await store.save(p)
+    await savePrefs(dir, p)
     expect(readdirSync(dir)).toEqual(['prefs.json'])
-    expect((await store.load()).prefs).toEqual(p)
+    expect((await loadPrefs(dir)).prefs).toEqual(p)
   })
 
   it('reports an unparsable file as invalid and does not touch it on load', async () => {
     writeFileSync(join(dir, 'prefs.json'), '{ not json')
-    expect((await new PrefsStore(dir).load()).invalid).toBe(true)
+    expect((await loadPrefs(dir)).invalid).toBe(true)
     expect(readFileSync(join(dir, 'prefs.json'), 'utf8')).toBe('{ not json')
   })
 
   it('creates the userData dir if needed', async () => {
     const nested = join(dir, 'userData')
-    await new PrefsStore(nested).save(defaultPrefs())
+    await savePrefs(nested, defaultPrefs())
     expect(readdirSync(nested)).toEqual(['prefs.json'])
   })
 })

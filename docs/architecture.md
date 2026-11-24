@@ -43,6 +43,7 @@ test/fixtures/ fictional homes (root: /fixture-root or ~-relative). Never real d
 | Secret-looking values are masked by default in the UI | unit test on the masking function + fixture | 未強制 |
 | Renderer runs with `contextIsolation: true`, `nodeIntegration: false`, `sandbox: true`, and imports neither `electron` nor Node built-ins | `test/unit/architecture.test.ts` + e2e asserts the renderer has no `require` | 強制済 |
 | Tests are real: vitest and Playwright each report >0 tests | `scripts/check-tests.sh` via `.harness/checks.sh` | 強制済 |
+| No classes in `src/` (tree-shaking): plain functions + interfaces; errors are `Object.assign(new Error(msg), { name })` with an `isXxxError` guard | `test/unit/architecture.test.ts` | 強制済 |
 
 ## 意図的に許している自由
 

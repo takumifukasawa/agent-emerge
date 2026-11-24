@@ -1,6 +1,6 @@
 import { join } from 'node:path'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
-import { ALLOWED_SUBCOMMANDS, GitArgsError, runGit, validateGitArgs } from '../../src/main/gitread'
+import { ALLOWED_SUBCOMMANDS, isGitArgsError, runGit, validateGitArgs } from '../../src/main/gitread'
 import { materializeFixture, type MaterializedFixture } from '../fixtures/materialize'
 
 let fx: MaterializedFixture
@@ -8,6 +8,15 @@ beforeAll(() => {
   fx = materializeFixture('home')
 })
 afterAll(() => fx.cleanup())
+
+const thrown = (fn: () => unknown): unknown => {
+  try {
+    fn()
+  } catch (e) {
+    return e
+  }
+  return undefined
+}
 
 describe('gitread allowlist', () => {
   it('allows exactly the read-only subcommands in docs/architecture.md', () => {
@@ -17,19 +26,19 @@ describe('gitread allowlist', () => {
   it.each(['push', 'commit', 'fetch', 'pull', 'checkout', 'reset', 'config', 'gc', 'stash', 'add', '-c', '--git-dir=x'])(
     'rejects subcommand %s',
     (sub) => {
-      expect(() => validateGitArgs(sub, [])).toThrow(GitArgsError)
+      expect(isGitArgsError(thrown(() => validateGitArgs(sub, [])))).toBe(true)
     }
   )
 
   it.each([['log', ['--output=/fixture/out']], ['log', ['--output', 'x']], ['log', ['-o']], ['status', ['-c']], ['rev-parse', ['--git-dir=x']]] as const)(
     'rejects writing / escaping argument for %s %j',
     (sub, args) => {
-      expect(() => validateGitArgs(sub, args)).toThrow(GitArgsError)
+      expect(isGitArgsError(thrown(() => validateGitArgs(sub, args)))).toBe(true)
     }
   )
 
   it('runGit throws before spawning on a disallowed subcommand', () => {
-    expect(() => runGit(fx.home, 'push')).toThrow(GitArgsError)
+    expect(isGitArgsError(thrown(() => runGit(fx.home, 'push')))).toBe(true)
   })
 
   it('reads status and unpushed commits of the fixture source repo', async () => {
