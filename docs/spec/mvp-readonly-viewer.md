@@ -104,12 +104,20 @@ Display names and manually added roots (accounts, sources, catalogs, harness pro
 - Agents other than Claude Code.
 - Code signing / notarization, auto-update.
 
-## Roadmap after the MVP (decisions/0003)
+## Roadmap after the MVP (decisions/0003, 0004)
 
+- **Phase 1.5**: overview dashboard — read-only, offline aggregation of session logs and memory per account
+  (period / project filters, sessions, projects, utterances, tokens, sessions per model, daily activity, per-project share, memory by type).
 - **Phase 2**: fetch catalogs (org + public: plugin marketplaces, skills CLI repos, agent-harness upstream, any git repo) using the user's git auth;
-  update checks; install / update with backup, preview and explicit approval.
-- **Phase 3**: routines — scheduled review and aggregation of session logs (in-app scheduler vs. launchd vs. Claude Code routines: to decide).
-- **Phase 4**: share to a catalog (leak scan → PR) and AI recommendations of what to install.
+  update checks; install / update; **AI generation** (CLAUDE.md suggestions, skill generation from memory) via the Agent SDK with JSON input / output.
+  Every write: backup, preview, explicit approval.
+- **Phase 3**: routines — scheduled review / aggregation; run only while the app is running, missed runs caught up on next launch.
+- **Phase 4**: share to a catalog (deterministic + AI leak scan → PR) and AI recommendations of what to import (priority + reason).
+
+## UI layout
+
+Roots (accounts, sources, catalogs, harness projects) in the sidebar; features as tabs in the main area; a detail pane on the right.
+Follows system light / dark. To be confirmed with a design mock next to the article-style layout (plan task 5.5).
 
 ## Open questions
 
