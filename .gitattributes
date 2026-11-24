@@ -6,3 +6,5 @@
 docs/roles/** text eol=lf
 AGENTS.md text eol=lf
 CLAUDE.md text eol=lf
+# fixtures: keep bytes exact (harness manifest hashes depend on them)
+test/fixtures/** -text

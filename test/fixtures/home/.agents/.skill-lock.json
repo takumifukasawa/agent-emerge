@@ -1,0 +1,14 @@
+{
+  "version": 3,
+  "skills": {
+    "locked-skill": {
+      "source": "fixture-owner/fixture-skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/fixture-owner/fixture-skills.git",
+      "skillPath": "skills/locked-skill/SKILL.md",
+      "skillFolderHash": "0000000000000000000000000000000000000000",
+      "installedAt": "2026-01-01T00:00:00.000Z",
+      "updatedAt": "2026-01-01T00:00:00.000Z"
+    }
+  }
+}

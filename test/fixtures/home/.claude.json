@@ -1,0 +1,15 @@
+{
+  "projects": {
+    "__HOME__/dev/harness-project": { "allowedTools": [], "mcpServers": {} },
+    "__HOME__/dev/plain-project": { "allowedTools": [], "mcpServers": {} },
+    "__HOME__/dev/missing-project": { "allowedTools": [], "mcpServers": {} }
+  },
+  "mcpServers": {
+    "fixture-mcp": {
+      "type": "stdio",
+      "command": "fixture-mcp-server",
+      "args": ["--stdio"],
+      "env": { "FIXTURE_TOKEN": "fixture-value-not-a-secret", "FIXTURE_REGION": "visible" }
+    }
+  }
+}

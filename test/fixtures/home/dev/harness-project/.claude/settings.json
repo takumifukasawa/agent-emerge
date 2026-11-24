@@ -1,0 +1,4 @@
+{
+  "model": "fixture-model-project",
+  "permissions": { "allow": ["Bash(npm test)"] }
+}

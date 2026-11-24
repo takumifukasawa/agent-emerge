@@ -40,3 +40,6 @@ out/
 dist/
 test-results/
 playwright-report/
+
+# fixtures must keep their (fictional) local settings even if a global gitignore excludes them
+!test/fixtures/**/.claude/settings.local.json

@@ -1,0 +1,15 @@
+{
+  "harness_version": "9.9.9",
+  "source": "https://github.com/fixture-owner/fixture-harness.git",
+  "source_ref": "",
+  "source_commit": "0000000000000000000000000000000000000000",
+  "installed_at": "2026-01-01",
+  "agents": "claude",
+  "files": [
+    {"path":".harness/clean.sh","src":"scripts/clean.sh","ownership":"managed","sha256":"99578e75e5cebcc3f612e696d08e5fb9374ed298","source_sha256":""},
+    {"path":".harness/drifted.sh","src":"scripts/drifted.sh","ownership":"managed","sha256":"53fed6558bbba6de4d912f871624d12394aaa1fd","source_sha256":""},
+    {"path":".harness/checks.sh","src":"checks.sh","ownership":"seed","sha256":"50e0cddcd0fc7206638aec76eec11c05aca225cb","source_sha256":""},
+    {"path":"AGENTS.md","src":"AGENTS.md","ownership":"merge","sha256":"6b94ac5d44129f984c76f2f5c88ada496795b93c","source_sha256":""},
+    {"path":".harness/missing.sh","src":"scripts/missing.sh","ownership":"managed","sha256":"99578e75e5cebcc3f612e696d08e5fb9374ed298","source_sha256":""}
+  ]
+}
