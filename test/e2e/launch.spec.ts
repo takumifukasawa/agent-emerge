@@ -122,3 +122,29 @@ test('sources and harness projects show git state, drift and sidebar badges', as
     await app.close()
   }
 })
+
+test('CLAUDE.md expands imports and memory lists files with their type', async () => {
+  const app = await launch()
+  try {
+    const win = await app.firstWindow()
+    await win.getByRole('button', { name: 'CLAUDE.md' }).click()
+    const items = win.getByTestId('instructions-item')
+    await expect(items).toHaveText([/default · CLAUDE\.md/, /work · CLAUDE\.md/, /project harness-project · CLAUDE\.md/, /project harness-project · AGENTS\.md/])
+    const detail = win.getByTestId('instructions-detail')
+    await expect(detail.getByTestId('import')).toHaveText('@shared/style.md')
+    await expect(detail.getByTestId('instructions-text')).toContainText('## Style (imported)')
+    await detail.getByLabel('Show as written (imports not expanded)').check()
+    await expect(detail.getByTestId('instructions-text')).toContainText('@shared/style.md')
+    await expect(detail.getByTestId('instructions-text')).not.toContainText('Style (imported)')
+
+    await win.getByRole('button', { name: 'Memory' }).click()
+    const group = win.getByTestId('memory-group')
+    await expect(group).toHaveCount(1)
+    await expect(group).toContainText('harness-project')
+    await expect(group.getByTestId('memory-type')).toHaveText('feedback')
+    await group.getByTestId('memory-item').click()
+    await expect(group.getByTestId('memory-body')).toContainText('Keep answers short.')
+  } finally {
+    await app.close()
+  }
+})

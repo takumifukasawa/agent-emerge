@@ -12,6 +12,7 @@ Only structure is recorded here, never values. Re-check when Claude Code or agen
   - Many other keys are caches / UI state; ignore them.
 - `settings.json`: `env`, `permissions`, `hooks`, `enabledPlugins` (`{ "<plugin>@<marketplace>": bool }`), `model`, `extraKnownMarketplaces`, ….
 - `skills/<name>/SKILL.md` (often symlinks), `agents/*.md`, `commands/*.md`, `CLAUDE.md` (`@path` imports).
+  `@path` imports (as the app reads them): a token at line start or after whitespace, outside code spans / fences; relative to the importing file, `~/` = home, absolute allowed; recursive, at most 5 hops. Project files: `CLAUDE.md`, `CLAUDE.local.md`, `.claude/CLAUDE.md`, `AGENTS.md`.
 - `plugins/installed_plugins.json`: `{ version, plugins: { "<plugin>@<marketplace>": [ { scope, installPath, version, installedAt, lastUpdated, gitCommitSha? } ] } }`.
   Plugin content under `plugins/cache/<marketplace>/<plugin>/<version>/` (also contains `.in_use/` markers; ignore them).
   `known_marketplaces.json`: marketplace name → `{ source, installLocation, lastUpdated }`.
@@ -19,6 +20,7 @@ Only structure is recorded here, never values. Re-check when Claude Code or agen
   **Where a plugin's skills live varies**: `skills/<name>/SKILL.md` (default), paths in `plugin.json` `skills`, or paths declared by the
   marketplace entry's `skills` (observed: no `plugin.json` at all, skill dirs at the plugin root). The adapter checks all three.
 - `projects/<encoded path>/`: session logs `<uuid>.jsonl` and `memory/` (`MEMORY.md` index + one file per memory).
+  Memory files: frontmatter `name`, `description`, `metadata.type` (some write a top-level `type`): `user` / `feedback` / `project` / `reference`.
   Encoded path = absolute project path with every non-alphanumeric char replaced by `-`.
 
 ## skills CLI (`~/.agents`)

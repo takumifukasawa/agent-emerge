@@ -1,6 +1,6 @@
 // IPC contract between main and renderer. Read-only by design (docs/architecture.md):
 // the only channels that write are prefs:*, and they write only the app's own prefs file (docs/decisions/0002).
-import type { Account, HarnessProject, SkillDiff, SkillMatrix, Source } from './model'
+import type { Account, HarnessProject, InstructionsDoc, MemoryGroup, SkillDiff, SkillMatrix, Source } from './model'
 import type { CatalogRoot, ManualRootKind, Prefs } from './prefs'
 
 export interface AppInfo {
@@ -16,6 +16,8 @@ export const IpcChannels = {
   getSkillDiff: 'skills:diff',
   listSources: 'sources:list',
   listHarnessProjects: 'harness:list',
+  listInstructions: 'instructions:list',
+  listMemory: 'memory:list',
   getPrefs: 'prefs:get',
   setDisplayName: 'prefs:setDisplayName',
   setManualRoot: 'prefs:setManualRoot',
@@ -30,6 +32,9 @@ export interface AgentEmergeApi {
   getSkillDiff(name: string, leftAccountId: string, rightAccountId: string): Promise<SkillDiff | null>
   listSources(): Promise<Source[]>
   listHarnessProjects(): Promise<HarnessProject[]>
+  /** CLAUDE.md / AGENTS.md of every account and harness project, imports expanded */
+  listInstructions(): Promise<InstructionsDoc[]>
+  listMemory(): Promise<MemoryGroup[]>
   getPrefs(): Promise<Prefs>
   /** name null / empty resets to the default name */
   setDisplayName(id: string, name: string | null): Promise<Prefs>

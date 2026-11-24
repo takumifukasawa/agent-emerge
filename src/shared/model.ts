@@ -172,3 +172,53 @@ export interface HarnessProject {
   /** null when the manifest is missing or unreadable */
   drift: DriftEntry[] | null
 }
+
+/** One `@path` import inside an instructions file, resolved recursively. */
+export interface ImportNode {
+  /** the token as written, without the "@" */
+  spec: string
+  /** resolved absolute path */
+  path: string
+  status: 'ok' | 'missing' | 'cycle' | 'too-deep'
+  children: ImportNode[]
+}
+
+export type InstructionsKind = 'CLAUDE.md' | 'CLAUDE.local.md' | '.claude/CLAUDE.md' | 'AGENTS.md'
+
+/** A CLAUDE.md / AGENTS.md of an account or a harness project. */
+export interface InstructionsDoc {
+  /** stable id: the file's path */
+  id: string
+  owner: { kind: 'account'; accountId: string } | { kind: 'project'; projectId: string; projectPath: string }
+  kind: InstructionsKind
+  path: string
+  raw: string
+  /** raw with every import replaced by the imported file's (expanded) content */
+  expanded: string
+  imports: ImportNode[]
+}
+
+export type MemoryType = 'user' | 'feedback' | 'project' | 'reference'
+
+export interface MemoryFile {
+  /** file name inside memory/ */
+  file: string
+  path: string
+  name: string | null
+  description: string | null
+  /** null when absent or not one of the four types */
+  type: MemoryType | null
+  body: string
+}
+
+/** One project's memory dir in one account (`projects/<encoded path>/memory/`). */
+export interface MemoryGroup {
+  accountId: string
+  /** the dir name under projects/ */
+  encoded: string
+  /** the project path when a known project encodes to `encoded`; else null (the encoding is lossy) */
+  projectPath: string | null
+  /** MEMORY.md (the index) as-is; null when absent */
+  index: string | null
+  files: MemoryFile[]
+}

@@ -3,7 +3,9 @@ import { app, ipcMain } from 'electron'
 import { IpcChannels } from '@shared/ipc'
 import { withCatalog, withDisplayName, withManualRoot, type ManualRootKind, type Prefs } from '@shared/prefs'
 import { buildAppInfo } from '../appInfo'
-import { readClaudeCodeAccount, type AccountSnapshot } from '../adapters/claude-code'
+import { readClaudeCodeAccount, readKnownProjects, type AccountSnapshot } from '../adapters/claude-code'
+import { readAccountInstructions, readProjectInstructions } from '../adapters/claude-code/instructions'
+import { readMemory } from '../adapters/claude-code/memory'
 import { discoverAccounts } from '../index/accounts'
 import { discoverHarnessProjects } from '../index/harness'
 import { discoverSources } from '../index/sources'
@@ -58,9 +60,26 @@ export function registerIpcHandlers(): void {
     discoverSources({ home: homedir(), snapshots: await snapshots(), manual: (await prefs).manualRoots.sources })
   )
 
-  ipcMain.handle(IpcChannels.listHarnessProjects, async () =>
+  ipcMain.handle(IpcChannels.listHarnessProjects, () => harnessProjects())
+
+  const harnessProjects = async () =>
     discoverHarnessProjects({ accounts: (await listAccounts()).filter((a) => a.exists), manual: (await prefs).manualRoots.harnessProjects })
-  )
+
+  ipcMain.handle(IpcChannels.listInstructions, async () => {
+    const accounts = (await listAccounts()).filter((a) => a.exists)
+    const projects = (await harnessProjects()).filter((p) => p.exists)
+    const docs = await Promise.all([
+      ...accounts.map((a) => readAccountInstructions(a.id, a.configDir, homedir())),
+      ...projects.map((p) => readProjectInstructions(p.id, p.path, homedir()))
+    ])
+    return docs.flat()
+  })
+
+  ipcMain.handle(IpcChannels.listMemory, async () => {
+    const accounts = (await listAccounts()).filter((a) => a.exists)
+    const groups = await Promise.all(accounts.map(async (a) => readMemory(a.id, a.configDir, await readKnownProjects(a))))
+    return groups.flat()
+  })
 
   ipcMain.handle(IpcChannels.getPrefs, () => prefs)
 

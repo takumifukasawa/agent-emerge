@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { ALL, useAppStore, type Page } from './store'
+import { InstructionsPage, MemoryPage } from './DocsPages'
 import { HarnessPage, SourcesPage } from './RootsPages'
 import { SkillsPage } from './SkillsPage'
 import { harnessBadge, sourcesBadge } from './labels'
@@ -86,6 +87,23 @@ function Placeholder({ page }: { page: Page }) {
   )
 }
 
+function Page({ page }: { page: Page }) {
+  switch (page) {
+    case 'skills':
+      return <SkillsPage />
+    case 'claude-md':
+      return <InstructionsPage />
+    case 'memory':
+      return <MemoryPage />
+    case 'sources':
+      return <SourcesPage />
+    case 'harness':
+      return <HarnessPage />
+    default:
+      return <Placeholder page={page} />
+  }
+}
+
 export function App() {
   const load = useAppStore((s) => s.load)
   const page = useAppStore((s) => s.page)
@@ -95,7 +113,7 @@ export function App() {
   return (
     <div className="app">
       <Sidebar />
-      {page === 'skills' ? <SkillsPage /> : page === 'sources' ? <SourcesPage /> : page === 'harness' ? <HarnessPage /> : <Placeholder page={page} />}
+      <Page page={page} />
     </div>
   )
 }

@@ -218,3 +218,9 @@ export async function readClaudeCodeAccount(account: Account, ctx: ReadContext):
   ]
   return { account, skills, plugins }
 }
+
+/** Project paths listed in the account's .claude.json. */
+export async function readKnownProjects(account: Account): Promise<string[]> {
+  const cj = await readJson<Json>(account.claudeJsonPath)
+  return Object.keys(cj.ok ? obj(cj.value['projects']) : {})
+}
