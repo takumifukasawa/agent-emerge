@@ -48,11 +48,27 @@ describe('architecture invariants (docs/architecture.md)', () => {
     expect(sources.length, 'no files found under src/; the scanner is broken').toBeGreaterThan(0)
   })
 
-  it('only src/main/fsread/ imports the filesystem module', () => {
+  it('only src/main/fsread/ and src/main/prefs/ import the filesystem module', () => {
     const v = violations((f) =>
-      under(f, 'src/main/fsread/') ? [] : f.imports.filter((i) => /^(fs|fs\/promises)$/.test(bare(i)))
+      under(f, 'src/main/fsread/') || under(f, 'src/main/prefs/')
+        ? []
+        : f.imports.filter((i) => /^(fs|fs\/promises)$/.test(bare(i)))
     )
-    expect(v, 'Move filesystem access into src/main/fsread/ and call its read-only helpers instead.').toEqual([])
+    expect(v, 'Move filesystem access into src/main/fsread/ (read-only helpers). Only src/main/prefs/ may write, and only its own prefs file (docs/decisions/0002).').toEqual([])
+  })
+
+  it('src/main/prefs/ writes only PREFS_FILE and never deletes, copies or links', () => {
+    const v = violations((f) => {
+      if (!under(f, 'src/main/prefs/')) return []
+      const out: string[] = []
+      if (/\b(rm|rmSync|unlink|unlinkSync|rmdir|rmdirSync|symlink|symlinkSync|link|linkSync|chmod|chmodSync|cp|cpSync|copyFile|copyFileSync|appendFile|appendFileSync|createWriteStream)\s*\(/.test(f.text))
+        out.push('uses a delete / copy / link / append API')
+      for (const m of f.text.matchAll(/\b(writeFile|writeFileSync|rename|renameSync)\s*\(([^,)]*)/g)) {
+        if (!/PREFS_FILE|tmpPath/.test(m[2] ?? '')) out.push(`${m[1]} target is not PREFS_FILE / its tmpPath`)
+      }
+      return out
+    })
+    expect(v, 'src/main/prefs/ may only write <userData>/prefs.json atomically (docs/decisions/0002).').toEqual([])
   })
 
   it('src/main/fsread/ never calls a filesystem write API', () => {
@@ -74,10 +90,10 @@ describe('architecture invariants (docs/architecture.md)', () => {
     expect(v, 'Run git through src/main/gitread/ (allowlisted read-only subcommands).').toEqual([])
   })
 
-  it('IPC channel names contain no write verb', () => {
+  it('IPC channel names contain no write verb outside prefs:', () => {
     const WRITE_VERB = /(write|save|delete|remove|create|update|set|put|install|uninstall|apply|rename|move|copy|sync|edit|patch)/i
-    const bad = Object.values(IpcChannels).filter((c) => WRITE_VERB.test(c))
-    expect(bad, 'IPC is read-only. Only reads, "open in editor" and "reveal in Finder" are allowed.').toEqual([])
+    const bad = Object.values(IpcChannels).filter((c) => !c.startsWith('prefs:') && WRITE_VERB.test(c))
+    expect(bad, 'IPC is read-only. Only reads, "open in editor" / "reveal in Finder", and prefs:* (the app\'s own prefs, docs/decisions/0002) are allowed.').toEqual([])
   })
 
   it('ipcMain handlers are registered only in src/main/ipc/', () => {

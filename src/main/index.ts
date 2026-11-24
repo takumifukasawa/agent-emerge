@@ -2,6 +2,10 @@ import { join } from 'node:path'
 import { app, BrowserWindow } from 'electron'
 import { registerIpcHandlers } from './ipc'
 
+// Tests (and anyone who wants an isolated profile) can move userData, so nothing lands in the real one.
+const userDataOverride = process.env['AGENT_EMERGE_USER_DATA']
+if (userDataOverride) app.setPath('userData', userDataOverride)
+
 function createWindow(): void {
   const win = new BrowserWindow({
     width: 1200,

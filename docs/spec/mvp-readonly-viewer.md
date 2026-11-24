@@ -1,7 +1,7 @@
 # MVP: read-only viewer for Claude Code skills and harness
 
 - Status: agreed (2026-11-24, grilling session Q1–Q25)
-- Related: [decisions/0001](../decisions/0001-product-scope.md), [architecture](../architecture.md), [plan](../plans/active/mvp-readonly-viewer.md)
+- Related: [decisions/0001](../decisions/0001-product-scope.md), [0002](../decisions/0002-app-prefs-write-exception.md), [0003](../decisions/0003-catalogs-and-roadmap.md), [architecture](../architecture.md), [plan](../plans/active/mvp-readonly-viewer.md)
 
 ## Purpose
 
@@ -19,7 +19,7 @@ path handling is written to work on Windows / Linux too.
 
 ## Roots (what the app scans)
 
-There are three kinds of roots. Ordinary projects that only have `.claude/skills` are out of scope.
+There are four kinds of roots. Ordinary projects that only have `.claude/skills` are out of scope.
 
 1. **Account**: `{ kind, configDir, displayName }`. `kind` is `claude-code` only for now; other agents (Codex, Cursor…)
    are added later as new kinds via an adapter per kind.
@@ -27,7 +27,10 @@ There are three kinds of roots. Ordinary projects that only have `.claude/skills
    - Accounts are always shown separately (each account sees different things). There is no merged view.
 2. **Source**: where skills / harness are authored (e.g. a skills git repo, the agent-harness upstream, `~/.agents`).
    - Auto-detected from symlink targets of installed skills and from `~/.agents/.skill-lock.json`. Can be added by hand.
-3. **Harness project**: a project with `.harness/manifest.json`.
+3. **Catalog** (per account, decisions/0003): a local clone of a git repo in an existing layout —
+   a plugin marketplace (`.claude-plugin/marketplace.json`) or a skills repo (`skills/<name>/SKILL.md`). Org or public.
+   The user clones it; the app never fetches in the MVP. Added by hand, attached to one account.
+4. **Harness project**: a project with `.harness/manifest.json`.
    - Auto-detected from the account's project history (`projects/`, `.claude.json` projects) filtered to those
      with a manifest. Can be added by hand. Paths that no longer exist are shown greyed out.
 
@@ -53,6 +56,8 @@ There are three kinds of roots. Ordinary projects that only have `.claude/skills
   - Otherwise compare a content hash of the skill folder.
   - A "differs" cell opens a per-file diff.
 - Filter to hide plugin-provided skills.
+- For an account with catalogs: catalog skills appear as rows too, marked **in catalog, not installed** / **installed** / **version differs**.
+- Provenance records the upstream URL and ref wherever known (skills-CLI lock, plugin marketplace, git remote of a source), for Phase 2.
 
 ## Warnings (detected read-only)
 
@@ -64,9 +69,14 @@ There are three kinds of roots. Ordinary projects that only have `.claude/skills
 - Harness drift: managed files in `.harness/manifest.json` that differ from what the manifest records (read the manifest directly; the `harness` CLI is not required).
 - Source git state: uncommitted changes, unpushed commits (allowlisted read-only git subcommands only).
 
+## Persistence
+
+Display names and manually added roots (accounts, sources, catalogs, harness projects) are saved in
+`<Electron userData>/prefs.json` — the only file the app writes (decisions/0002). `AGENT_EMERGE_USER_DATA` overrides the userData dir (used by tests).
+
 ## Safety
 
-- **No write API over IPC.** The only side-effecting actions are "open in editor" and "reveal in Finder".
+- **No write API over IPC**, except `prefs:*` which writes only the app's own prefs file. Other side effects: "open in editor", "reveal in Finder".
 - Values whose key contains `key` / `token` / `secret` / `password` (settings `env`, MCP headers / env) are masked
   as `••••` by default; click to reveal.
 - No telemetry, no network access (child processes `claude` / `git` excepted), no absolute paths in logs.
@@ -74,7 +84,8 @@ There are three kinds of roots. Ordinary projects that only have `.claude/skills
 
 ## Acceptance criteria
 
-- [ ] With a fixture home containing two accounts, the app lists both accounts with editable display names.
+- [ ] With a fixture home containing two accounts, the app lists both accounts with editable display names that survive a restart.
+- [ ] A catalog clone attached to an account shows its skills as not installed / installed / version differs.
 - [ ] The skill × account matrix shows presence, provenance and identical/differs for the fixture skills; a "differs" cell opens a per-file diff.
 - [ ] Each warning above is produced for a fixture case that triggers it, and not produced for a clean fixture.
 - [ ] Settings view shows each layer and the effective value with its origin layer.
@@ -86,11 +97,19 @@ There are three kinds of roots. Ordinary projects that only have `.claude/skills
 
 ## Out of scope (MVP)
 
-- Any write to `~/.claude*`, sources or projects (applying suggestions, installing / syncing skills).
-- AI-generated suggestions, routines, Slack, sharing to a team catalog.
+- Any write to `~/.claude*`, sources, catalogs or projects (applying suggestions, installing / syncing skills).
+- Fetching catalogs, update checks over the network.
+- AI-generated suggestions, routines, Slack, sharing to a catalog.
 - Session log aggregation (planned later).
 - Agents other than Claude Code.
 - Code signing / notarization, auto-update.
+
+## Roadmap after the MVP (decisions/0003)
+
+- **Phase 2**: fetch catalogs (org + public: plugin marketplaces, skills CLI repos, agent-harness upstream, any git repo) using the user's git auth;
+  update checks; install / update with backup, preview and explicit approval.
+- **Phase 3**: routines — scheduled review and aggregation of session logs (in-app scheduler vs. launchd vs. Claude Code routines: to decide).
+- **Phase 4**: share to a catalog (leak scan → PR) and AI recommendations of what to install.
 
 ## Open questions
 

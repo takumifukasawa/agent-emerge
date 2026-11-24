@@ -2,7 +2,7 @@
 
 - 開始: 2026-11-24
 - 状態: 進行中
-- 関連: docs/decisions/0001, docs/spec/mvp-readonly-viewer.md, docs/architecture.md
+- 関連: docs/decisions/0001, 0002, 0003, docs/spec/mvp-readonly-viewer.md, docs/architecture.md
 
 ## 目的（何ができれば完了か）
 
@@ -20,7 +20,7 @@ The acceptance criteria in `docs/spec/mvp-readonly-viewer.md` are all met and `h
 | 1 | Scaffold: electron-vite + React + TS + zustand, vitest, Playwright (Electron); wire into `.harness/checks.sh` | 完了 | contextIsolation on, nodeIntegration off |
 | 2 | Structural tests for architecture invariants (fsread/gitread only, no write IPC, no network) | 完了 | turn 「未強制」 rows into 強制済 |
 | 3 | Fixtures: fictional home with 2 accounts, a source repo, a harness project, cases for every warning | 完了 | paths under /fixture-root or ~ |
-| 4 | `fsread` + `gitread` + account discovery (`~/.claude`, `~/.claude-*`, manual add, display names) | 一部完了 | discovery takes manual dirs / display names as input; **persisting them is blocked** (see 未確定事項) |
+| 4 | `fsread` + `gitread` + account discovery (`~/.claude`, `~/.claude-*`, manual add, display names) + prefs persistence | 完了 | prefs.json per decisions/0002 |
 | 5 | claude-code adapter: skills (user / plugin / harness project), provenance, plugins enabled state | 未着手 | |
 | 5.5 | UI design mock (HTML) reviewed by the user before building screens | 未着手 | layout proposal: 3 panes (roots sidebar / tabbed main with the matrix / detail pane), follows system light/dark |
 | 6 | Skill × account matrix: hashing, identical/differs, per-file diff | 未着手 | main screen |
@@ -28,6 +28,7 @@ The acceptance criteria in `docs/spec/mvp-readonly-viewer.md` are all met and `h
 | 8 | CLAUDE.md / AGENTS.md with `@import` expansion; memory viewer | 未着手 | |
 | 9 | Settings layers + effective value with origin; MCP; agents; commands; secret masking | 未着手 | |
 | 10 | Sources (git state) + harness projects (manifest drift) | 未着手 | |
+| 10.5 | Catalogs: attach a local clone to an account; marketplace / skills-repo layouts; not installed / installed / version differs | 未着手 | decisions/0003; needs a catalog fixture |
 | 11 | File watching for the open account | 未着手 | |
 | 12 | macOS dmg build (unsigned) | 未着手 | |
 
@@ -44,11 +45,11 @@ The acceptance criteria in `docs/spec/mvp-readonly-viewer.md` are all met and `h
 - 2026-11-24: Task 2 done. `test/unit/architecture.test.ts` (10 tests); each rule verified by planting a violation. IPC handlers moved to `src/main/ipc/`. Still open: gitread allowlist test (task 4), no-absolute-paths-in-logs.
 - 2026-11-24: Task 3 done. `test/fixtures/{home,clean-home}` + `materialize.ts` (temp copy, `__HOME__` fill, git source repo with upstream). Case catalog: `test/fixtures/README.md`. Formats: `docs/references/claude-code-and-harness-files.md`.
 - 2026-11-24: Task 4 mostly done: `fsread` (read-only), `gitread` (allowlist + forbidden args, unit-tested), `discoverAccounts` (auto / CLAUDE_CONFIG_DIR / manual, dedupe by real path), `accounts:list` IPC, e2e shows fixture accounts. Leak-check repair text pointed at `/fixture/home`, which the check itself rejects; changed the text to `/fixture-root` (detection unchanged).
+- 2026-11-24: User approved decisions/0002 (prefs.json write exception) and 0003 (catalogs + roadmap). Prefs store + `prefs:*` IPC done; structural tests updated and mutation-checked; e2e verifies a rename survives restart and that userData is isolated via `AGENT_EMERGE_USER_DATA`.
 
 ## 未確定事項（人間の判断待ち）
 
 - Final app name.
 - Threshold for "description too long".
 - LICENSE file: MIT is decided, but the copyright holder line (real name vs. handle) is not.
-- **Persisting display names / manual roots needs a write.** Proposal (not applied; changing the invariant needs a human): allow writes only to `<Electron userData>/prefs.json` from `src/main/prefs/`, write-verb IPC channels only under `prefs:`, structural tests updated accordingly (would be decisions/0002).
 - UI look: to be decided with a mock (task 5.5).
