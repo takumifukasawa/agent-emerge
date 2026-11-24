@@ -35,11 +35,12 @@ test/fixtures/ fictional homes (root: /fixture/home or ~-relative). Never real d
 | 不変条件 | 強制手段 | 状態 |
 |---|---|---|
 | No leaks in the repo: no absolute home paths, e-mail addresses or token-like strings in tracked / to-be-tracked files or the staged diff. No allowlist | `scripts/check-no-leaks.sh` (`.harness/checks.sh`, fast → pre-commit) | 強制済 |
-| Read-only: the IPC contract has no write operation; only `fsread` touches fs and it exports no write function | structural test (to add with the first code: grep `fsread` exports and IPC channel list for write verbs; `node:fs` imports outside `fsread`) | 未強制 |
-| git is spawned only via `gitread` with an allowlist (`status`, `log`, `rev-parse`, `rev-list`, `for-each-ref`) | structural test (same as above, for `child_process`) | 未強制 |
-| No network / telemetry from the app (child processes `claude` / `git` excepted); no absolute paths in logs | dependency + import scan for http clients in `main` / `renderer` | 未強制 |
+| Read-only: only `fsread` imports fs and it calls no fs write API; IPC channel names have no write verb; `ipcMain` handlers live only in `src/main/ipc/` | `test/unit/architecture.test.ts` | 強制済 |
+| git is spawned only via `gitread` with an allowlist (`status`, `log`, `rev-parse`, `rev-list`, `for-each-ref`) | `test/unit/architecture.test.ts` (only `gitread` imports `child_process`); the allowlist itself gets a unit test with `gitread` (task 4) | 一部強制 |
+| No network / telemetry from the app (child processes `claude` / `git` excepted) | `test/unit/architecture.test.ts` (network modules / calls in `src/`, network / telemetry / auto-update packages in `dependencies`) | 強制済 |
+| No absolute paths in logs | none yet | 未強制 |
 | Secret-looking values are masked by default in the UI | unit test on the masking function + fixture | 未強制 |
-| Renderer runs with `contextIsolation: true`, `nodeIntegration: false`, `sandbox: true` | e2e asserts the renderer has no `require`; structural test on BrowserWindow options still to add | 一部強制 |
+| Renderer runs with `contextIsolation: true`, `nodeIntegration: false`, `sandbox: true`, and imports neither `electron` nor Node built-ins | `test/unit/architecture.test.ts` + e2e asserts the renderer has no `require` | 強制済 |
 | Tests are real: vitest and Playwright each report >0 tests | `scripts/check-tests.sh` via `.harness/checks.sh` | 強制済 |
 
 ## 意図的に許している自由

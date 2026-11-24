@@ -18,7 +18,7 @@ The acceptance criteria in `docs/spec/mvp-readonly-viewer.md` are all met and `h
 | # | タスク | 状態 | 備考 |
 |---|---|---|---|
 | 1 | Scaffold: electron-vite + React + TS + zustand, vitest, Playwright (Electron); wire into `.harness/checks.sh` | 完了 | contextIsolation on, nodeIntegration off |
-| 2 | Structural tests for architecture invariants (fsread/gitread only, no write IPC, no network) | 未着手 | turn 「未強制」 rows into 強制済 |
+| 2 | Structural tests for architecture invariants (fsread/gitread only, no write IPC, no network) | 完了 | turn 「未強制」 rows into 強制済 |
 | 3 | Fixtures: fictional home with 2 accounts, a source repo, a harness project, cases for every warning | 未着手 | paths under /fixture/home or ~ |
 | 4 | `fsread` + `gitread` + account discovery (`~/.claude`, `~/.claude-*`, manual add, display names) | 未着手 | |
 | 5 | claude-code adapter: skills (user / plugin / harness project), provenance, plugins enabled state | 未着手 | |
@@ -40,6 +40,7 @@ The acceptance criteria in `docs/spec/mvp-readonly-viewer.md` are all met and `h
 - 2026-11-24: Read the DeNA article, agreed scope, wrote spec / architecture / this plan, added `scripts/check-no-leaks.sh`.
 
 - 2026-11-24: Task 1 done. Electron 45 / electron-vite 6 / Vite 8 / TS 7 / React 19 / zustand 5. Preload is built as CJS (`index.cjs`) so the renderer can stay sandboxed. Checks: typecheck (fast), unit >0, e2e launch >0.
+- 2026-11-24: Task 2 done. `test/unit/architecture.test.ts` (10 tests); each rule verified by planting a violation. IPC handlers moved to `src/main/ipc/`. Still open: gitread allowlist test (task 4), no-absolute-paths-in-logs.
 
 ## 未確定事項（人間の判断待ち）
 

@@ -1,7 +1,6 @@
 import { join } from 'node:path'
-import { app, BrowserWindow, ipcMain } from 'electron'
-import { IpcChannels } from '@shared/ipc'
-import { buildAppInfo } from './appInfo'
+import { app, BrowserWindow } from 'electron'
+import { registerIpcHandlers } from './ipc'
 
 function createWindow(): void {
   const win = new BrowserWindow({
@@ -21,9 +20,7 @@ function createWindow(): void {
 }
 
 app.whenReady().then(() => {
-  ipcMain.handle(IpcChannels.getAppInfo, () =>
-    buildAppInfo(app.getName(), app.getVersion(), process.platform)
-  )
+  registerIpcHandlers()
   createWindow()
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
