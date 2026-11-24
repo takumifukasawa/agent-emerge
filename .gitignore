@@ -3,6 +3,16 @@
 .harness/conflicts/
 .harness/source.local
 .harness/installed
+
+# app
+node_modules/
+out/
+dist/
+test-results/
+playwright-report/
+
+# fixtures must keep their (fictional) local settings even if a global gitignore excludes them
+!test/fixtures/**/.claude/settings.local.json
 # >>> agent-harness managed (do not commit; restore with: harness install)
 /.harness/bin/harness
 /.harness/bin/harness.cmd
@@ -33,13 +43,3 @@
 /.harness/scripts/codex-deny.sh
 /.githooks/pre-commit
 # <<< agent-harness managed
-
-# app
-node_modules/
-out/
-dist/
-test-results/
-playwright-report/
-
-# fixtures must keep their (fictional) local settings even if a global gitignore excludes them
-!test/fixtures/**/.claude/settings.local.json
