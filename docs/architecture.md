@@ -20,7 +20,7 @@ src/
     ipc/       registers read-only handlers + "open in editor" / "reveal in Finder"
   preload/     exposes the IPC contract to the renderer (contextIsolation on, no nodeIntegration)
   renderer/    React UI + zustand stores. Talks to main only through preload
-test/fixtures/ fictional homes (root: /fixture/home or ~-relative). Never real data
+test/fixtures/ fictional homes (root: /fixture-root or ~-relative). Never real data
 ```
 
 ## 依存の向き（許される辺だけを列挙する）

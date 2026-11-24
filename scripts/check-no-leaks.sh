@@ -31,7 +31,7 @@ report "token-like string" "$token_re"
 if [ "$fail" -ne 0 ]; then
   cat <<'MSG'
 How to fix:
-  - Paths: write them as ~/... or use the fictional fixture root /fixture/home. Never a real user's path.
+  - Paths: write them as ~/... or use the fictional fixture root /fixture-root. Never a real user's path.
   - E-mail / tokens: remove them. If a secret was real, rotate it; if it was ever committed, run the leak-audit skill.
   - Do not add an allowlist to get past this check (docs/architecture.md, "No leaks in the repo").
 MSG
